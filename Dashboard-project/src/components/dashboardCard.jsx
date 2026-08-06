@@ -1,3 +1,5 @@
+import "./dashboardCard.css";
+
 function DashboardCard({ title, value, subtitle }) {
     return (
         <div className="card">
