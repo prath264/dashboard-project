@@ -1,0 +1,78 @@
+.monthly-issue-card {
+    min-width: 0;
+    padding: 20px;
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+.monthly-issue-card {
+    min-width: 0;
+}
+
+.monthly-issue-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.monthly-issue-header h3 {
+    font-size: 18px;
+    font-weight: 600;
+}
+.monthly-issue-header p {
+    margin-bottom: 0;
+}
+
+.issue-total {
+    color: #1d4ed8;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 7px 10px;
+    white-space: nowrap;
+}
+
+.monthly-issue-chart {
+    height: 292px;
+    margin-top: 12px;
+}
+
+.issue-tooltip {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    background: #111827;
+    border-radius: 8px;
+    color: #ffffff;
+    font-size: 12px;
+    padding: 9px 12px;
+    box-shadow: 0 8px 20px rgba(17, 24, 39, 0.2);
+}
+
+.issue-tooltip span {
+    color: #bfdbfe;
+}
+
+.chart-message {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6b7280;
+    font-size: 14px;
+}
+
+.chart-message.error {
+    color: #b91c1c;
+}
+
+@media (max-width: 640px) {
+    .monthly-issue-header {
+        flex-direction: column;
+    }
+}

@@ -1,16 +1,60 @@
-# React + Vite
+# Cartridge Management System
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Monorepo for the MMRCL cartridge inventory application.
 
-Currently, two official plugins are available:
+## Structure
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- `frontend/` — React (Vite) SPA (existing dashboard UI; router/auth wiring comes in a later step)
+- `backend/` — FastAPI API (`/api/v1/...`)
 
-## React Compiler
+## Backend setup (Step 1 — auth)
 
-The React Compiler is not enabled on this template. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+1. Create PostgreSQL 15+ database, e.g. `cartridge_db`.
+2. Copy env file and edit secrets:
 
-## Expanding the ESLint configuration
+   ```bash
+   cd backend
+   copy .env.example .env
+   ```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+3. Create a virtualenv, install dependencies, run migrations:
+
+   ```bash
+   python -m venv .venv
+   .venv\Scripts\activate
+   pip install -r requirements.txt
+   alembic upgrade head
+   python scripts/create_admin.py
+   ```
+
+4. Start the API:
+
+   ```bash
+   uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+   ```
+
+### Auth API (`/api/v1`)
+
+| Method | Path | Access |
+|--------|------|--------|
+| POST | `/auth/login` | Public |
+| POST | `/auth/refresh` | Public (valid refresh token) |
+| POST | `/auth/logout` | Public (revokes refresh token) |
+| GET | `/users/me` | Authenticated |
+| GET | `/users` | Admin |
+| POST | `/users` | Admin (create user) |
+| PATCH | `/users/{id}` | Admin |
+
+Responses use `{ "data": ..., "meta": { "page", "page_size", "total" } }` for list endpoints.
+
+## Frontend setup
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+## Next build step
+
+Backend: Cartridge, Printer, Vendor models + CRUD routers (confirm any open schema questions before proceeding).

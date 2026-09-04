@@ -1,0 +1,165 @@
+.login-page {
+    min-height: 100vh;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 24px;
+
+    background: #f3f4f6;
+}
+
+.login-card {
+    width: 100%;
+
+    max-width: 420px;
+
+    background: #ffffff;
+
+    border: 1px solid #e5e7eb;
+
+    border-radius: 14px;
+
+    padding: 32px;
+
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+.login-header {
+    text-align: center;
+
+    margin-bottom: 28px;
+}
+
+.login-header h1 {
+    margin: 0;
+
+    font-size: 26px;
+
+    font-weight: 600;
+
+    color: #111827;
+}
+
+.login-header p {
+    margin: 8px 0 0;
+
+    color: #6b7280;
+
+    font-size: 14px;
+}
+
+.login-form {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 18px;
+}
+
+.login-form-group {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 7px;
+}
+
+.login-form-group label {
+    font-size: 14px;
+
+    font-weight: 500;
+
+    color: #374151;
+}
+
+.login-form-group input {
+    width: 100%;
+
+    box-sizing: border-box;
+
+    padding: 12px;
+
+    border: 1px solid #d1d5db;
+
+    border-radius: 8px;
+
+    font-size: 14px;
+
+    color: #111827;
+
+    background: #ffffff;
+
+    outline: none;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.login-form-group input:focus {
+    border-color: #2563eb;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(37, 99, 235, 0.1);
+}
+
+.login-form-group input::placeholder {
+    color: #9ca3af;
+}
+
+.login-error {
+    padding: 10px 12px;
+
+    border: 1px solid #fecaca;
+
+    background: #fef2f2;
+
+    color: #b91c1c;
+
+    border-radius: 8px;
+
+    font-size: 14px;
+}
+
+.login-submit {
+    width: 100%;
+
+    padding: 12px;
+
+    border: none;
+
+    border-radius: 8px;
+
+    background: #2563eb;
+
+    color: #ffffff;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: background 0.2s ease;
+}
+
+.login-submit:hover:not(:disabled) {
+    background: #1d4ed8;
+}
+
+.login-submit:disabled {
+    opacity: 0.65;
+
+    cursor: not-allowed;
+}
+
+.login-loading {
+    color: #374151;
+
+    font-size: 15px;
+}

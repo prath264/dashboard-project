@@ -1,0 +1,129 @@
+.dashboard-card {
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+    border-radius: 16px;
+    padding: 22px;
+    min-height: 170px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    box-shadow: 0 4px 14px #d1d5db;
+    transition: all 0.25s ease;
+}
+
+.dashboard-card:hover {
+    transform: scale(1.02);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.10);
+}
+
+.card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.card-content {
+    flex: 1;
+}
+
+.dashboard-card h4 {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.dashboard-card h2 {
+    margin: 12px 0 6px;
+    font-size: 38px;
+    font-weight: 700;
+    color: #111827;
+    line-height: 1;
+}
+
+.dashboard-card p {
+    margin: 0;
+    font-size: 14px;
+    color: #6b7280;
+}
+
+.card-footer {
+    margin-top: 18px;
+    padding-top: 14px;
+    border-top: 1px solid #e5e7eb;
+    font-size: 13px;
+    color: #9ca3af;
+}
+
+.card-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 24px;
+}
+
+/* ---------- Blue ---------- */
+
+.blue {
+    background: #f5f9ff;
+}
+
+.blue h4 {
+    color: #2563eb;
+}
+
+.blue .card-icon {
+    background: #dbeafe;
+    color: #2563eb;
+}
+
+/* ---------- Green ---------- */
+
+.green {
+    background: #f4fbf5;
+}
+
+.green h4 {
+    color: #16a34a;
+}
+
+.green .card-icon {
+    background: #dcfce7;
+    color: #16a34a;
+}
+
+/* ---------- Orange ---------- */
+
+.orange {
+    background: #fffaf2;
+}
+
+.orange h4 {
+    color: #d97706;
+}
+
+.orange .card-icon {
+    background: #fef3c7;
+    color: #d97706;
+}
+
+/* ---------- Red ---------- */
+
+.red {
+    background: #fff5f5;
+}
+
+.red h4 {
+    color: #dc2626;
+}
+
+.red .card-icon {
+    background: #fee2e2;
+    color: #dc2626;
+}

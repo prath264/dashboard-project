@@ -1,0 +1,350 @@
+.engineers-page {
+    flex: 1;
+    padding: 24px;
+    background: #f3f4f6;
+    overflow: hidden;
+}
+
+.engineers-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.engineers-header h1 {
+    margin: 0;
+    font-size: 32px;
+    font-weight: 600;
+    color: #111827;
+}
+
+.engineers-header p {
+    margin-top: 4px;
+    color: #6b7280;
+    font-size: 14px;
+}
+
+.engineers-add-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 10px 16px;
+    color: #ffffff;
+    background: #2563eb;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.engineers-add-btn:hover {
+    background: #1d4ed8;
+}
+
+.engineers-add-btn svg {
+    font-size: 17px;
+}
+
+.engineers-toolbar {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.engineers-search {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+    max-width: 400px;
+    height: 40px;
+    padding: 0 12px;
+    color: #6b7280;
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    box-sizing: border-box;
+}
+
+.engineers-search svg {
+    flex-shrink: 0;
+    font-size: 16px;
+}
+
+.engineers-search input {
+    width: 100%;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: #374151;
+    font-size: 14px;
+}
+
+.engineers-search input::placeholder {
+    color: #9ca3af;
+}
+
+.engineers-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    margin-bottom: 12px;
+}
+
+.engineers-title h2 {
+    margin: 0;
+    color: #111827;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.engineers-title span {
+    margin-left: auto;
+    color: #6b7280;
+    font-size: 13px;
+    text-align: right;
+}
+
+.engineers-table-card {
+    padding: 20px;
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.engineers-table-card:hover {
+    transform: scale(1.01);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.engineers-table-wrap {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.engineers-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.engineers-table thead {
+    background: #f9fafb;
+}
+
+.engineers-table th {
+    padding: 13px 14px;
+    color: #6b7280;
+    border: none;
+    border-bottom: 1px solid #d1d5db !important;
+    background: #f9fafb;
+    font-size: 12px;
+    font-weight: 600;
+    text-align: left;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+.engineers-table td {
+    padding: 15px 14px;
+    color: #374151;
+    border: none;
+    border-bottom: 1px solid #f3f4f6;
+    font-size: 14px;
+    text-align: left;
+    vertical-align: middle;
+}
+
+.engineers-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.engineers-table tbody tr:hover {
+    background: #f9fafb;
+}
+
+.engineers-table .center-column {
+    text-align: center;
+}
+
+.engineers-table th:nth-child(1),
+.engineers-table td:nth-child(1) {
+    width: 25%;
+}
+
+.engineers-table th:nth-child(2),
+.engineers-table td:nth-child(2) {
+    width: 35%;
+}
+
+.engineers-table th:nth-child(3),
+.engineers-table td:nth-child(3) {
+    width: 20%;
+}
+
+.engineers-table th:nth-child(4),
+.engineers-table td:nth-child(4) {
+    width: 20%;
+}
+
+.engineers-status {
+    display: inline-block;
+    min-width: 65px;
+    padding: 8px 9px;
+    box-sizing: border-box;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+    text-align: center;
+}
+
+.engineers-status.active {
+    color: #166534;
+    background: #dcfce7;
+}
+
+.engineers-status.inactive {
+    color: #991b1b;
+    background: #fee2e2;
+}
+
+.engineers-form-card {
+    margin-bottom: 20px;
+    padding: 20px;
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+.engineers-form-header {
+    margin-bottom: 18px;
+}
+
+.engineers-form-header h2 {
+    margin: 0;
+    color: #111827;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.engineers-form-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+.engineers-form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.engineers-form-field span {
+    color: #374151;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.engineers-form-field input {
+    width: 100%;
+    height: 40px;
+    padding: 0 12px;
+    box-sizing: border-box;
+    color: #374151;
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    outline: none;
+    font-size: 14px;
+}
+
+.engineers-form-field input:focus {
+    border-color: #2563eb;
+}
+
+.engineers-form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.engineers-form-actions button {
+    padding: 9px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.engineers-form-actions button[type="button"] {
+    color: #374151;
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+}
+
+.engineers-form-actions button[type="submit"] {
+    color: #ffffff;
+    background: #2563eb;
+    border: 1px solid #2563eb;
+}
+
+.engineers-form-actions button[type="submit"]:hover {
+    background: #1d4ed8;
+}
+
+.no-results {
+    padding: 30px !important;
+    text-align: center !important;
+    color: #6b7280 !important;
+}
+
+@media (max-width: 900px) {
+    .engineers-page {
+        padding: 20px;
+    }
+
+    .engineers-form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .engineers-table {
+        min-width: 700px;
+        table-layout: auto;
+    }
+}
+
+@media (max-width: 600px) {
+    .engineers-page {
+        padding: 16px;
+    }
+
+    .engineers-header {
+        align-items: flex-start;
+        gap: 15px;
+        flex-direction: column;
+    }
+
+    .engineers-header h1 {
+        font-size: 26px;
+    }
+
+    .engineers-add-btn {
+        width: 100%;
+    }
+
+    .engineers-search {
+        max-width: 100%;
+    }
+
+    .engineers-table-card {
+        padding: 16px;
+    }
+}

@@ -1,0 +1,131 @@
+.cartridge-quantities-card {
+    min-width: 0;
+
+    padding: 20px;
+
+    background: #ffffff;
+
+    border: 1px solid #d1d5db;
+
+    border-radius: 12px;
+
+    box-shadow:
+        0 4px 10px
+        rgba(0, 0, 0, 0.08);
+}
+
+.cartridge-quantities-header {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    margin-bottom: 18px;
+}
+
+.cartridge-quantities-title {
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+}
+
+.cartridge-quantities-title svg {
+    color: #2563eb;
+
+    font-size: 20px;
+}
+
+.cartridge-quantities-title h2 {
+    margin: 0;
+
+    font-size: 18px;
+
+    font-weight: 600;
+
+    color: #111827;
+}
+
+.cartridge-quantities-list {
+    max-height: 250px;
+
+    overflow-y: auto;
+
+    scrollbar-width: thin;
+}
+
+.cartridge-quantity-row {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 16px;
+
+    padding: 13px 4px;
+
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.cartridge-quantity-row:last-child {
+    border-bottom: none;
+}
+
+.cartridge-quantity-name {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 3px;
+
+    min-width: 0;
+}
+
+.cartridge-quantity-name span {
+    color: #374151;
+
+    font-size: 14px;
+
+    font-weight: 500;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+}
+
+.cartridge-quantity-name small {
+    color: #9ca3af;
+
+    font-size: 12px;
+}
+
+.cartridge-quantity-value {
+    min-width: 40px;
+
+    text-align: right;
+
+    color: #111827;
+
+    font-size: 16px;
+
+    font-weight: 700;
+}
+
+.cartridge-quantities-message {
+    padding: 25px 10px;
+
+    text-align: center;
+
+    color: #6b7280;
+
+    font-size: 14px;
+}
+
+.cartridge-quantities-message.error {
+    color: #b91c1c;
+}

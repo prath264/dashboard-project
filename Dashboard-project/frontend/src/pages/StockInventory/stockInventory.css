@@ -1,0 +1,797 @@
+.stock-header {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 20px;
+
+}
+
+.stock-actions {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+}
+
+.stock-btn {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 7px;
+
+    padding: 10px 16px;
+
+    border: none;
+
+    border-radius: 8px;
+
+    cursor: pointer;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    background: #2563eb;
+
+    color: white;
+
+    transition: 0.2s ease;
+
+}
+
+.stock-btn:hover {
+
+    opacity: 0.9;
+
+}
+
+.stock-btn svg {
+
+    font-size: 17px;
+
+}
+
+.stock-inventory {
+
+    flex: 1;
+
+    padding: 24px;
+
+    background: #f3f4f6;
+
+    overflow: hidden;
+
+}
+
+.stock-header {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    margin-bottom: 20px;
+
+}
+
+.stock-header h1 {
+
+    margin: 0;
+
+    font-size: 32px;
+
+}
+
+.stock-header p {
+
+    margin-top: 4px;
+
+    color: #6b7280;
+
+}
+
+.stock-actions {
+
+    display: flex;
+
+    gap: 10px;
+
+}
+
+.add-btn {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    padding: 10px 16px;
+
+    color: white;
+
+    background: #2563eb;
+
+    border: none;
+
+    border-radius: 6px;
+
+    font-size: 14px;
+
+    font-weight: 500;
+
+    cursor: pointer;
+
+}
+
+.add-btn:hover {
+
+    background: #1d4ed8;
+
+}
+
+.inventory-toolbar {
+
+    display: flex;
+
+    gap: 12px;
+
+    margin-bottom: 18px;
+
+}
+
+.search-box {
+
+    display: flex;
+
+    flex: 1;
+
+    align-items: center;
+
+    gap: 8px;
+
+    max-width: 400px;
+
+    height: 40px;
+
+    padding: 0 12px;
+
+    color: #6b7280;
+
+    background: white;
+
+    border: 1px solid #d1d5db;
+
+    border-radius: 6px;
+
+}
+
+.search-box input {
+
+    width: 100%;
+
+    border: none;
+
+    outline: none;
+
+    font-size: 14px;
+
+}
+
+.inventory-toolbar select {
+
+    min-width: 150px;
+
+    height: 40px;
+
+    padding: 0 10px;
+
+    color: #374151;
+
+    background: white;
+
+    border: 1px solid #d1d5db;
+
+    border-radius: 6px;
+
+    outline: none;
+
+}
+
+.inventory-title {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    margin-bottom: 12px;
+
+}
+
+.inventory-title div {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+}
+
+.inventory-title h3 {
+
+    margin: 0;
+
+    font-size: 18px;
+
+    font-weight: 600;
+
+}
+
+.inventory-title svg {
+
+    color: #2563eb;
+
+}
+
+.inventory-title span {
+
+    color: #6b7280;
+
+    font-size: 13px;
+
+}
+
+.inventory-table-card {
+
+    padding: 20px;
+
+    background: #ffffff;
+
+    border: 1px solid #d1d5db;
+
+    border-radius: 12px;
+
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+}
+
+.inventory-table-card:hover {
+
+    transform: scale(1.01);
+
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+
+}
+
+.table-container {
+
+    width: 100%;
+
+    overflow-x: auto;
+
+}
+
+table {
+
+    width: 100%;
+
+    border-collapse: collapse;
+
+}
+
+thead {
+
+    background: #f9fafb;
+
+}
+
+.inventory-table-card th {
+
+    border-bottom: 1px solid #d1d5db;
+
+    padding-bottom: 2px;
+
+}
+
+.inventory-table-card th:nth-child(4),
+
+.inventory-table-card td:nth-child(4),
+
+.inventory-table-card th:nth-child(5),
+
+.inventory-table-card td:nth-child(5),
+
+.inventory-table-card th:nth-child(6),
+
+.inventory-table-card td:nth-child(6),
+
+.inventory-table-card th:nth-child(7),
+
+.inventory-table-card td:nth-child(7) {
+
+    width: 200px;
+
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+
+    text-align: center;
+
+}
+
+th {
+
+    padding: 13px 14px;
+
+    color: #6b7280;
+
+    border-bottom: 1px solid #e5e7eb;
+
+    font-size: 12px;
+
+    font-weight: 600;
+
+    text-align: left;
+
+}
+
+td {
+
+    padding: 15px 14px;
+
+    color: #374151;
+
+    border-bottom: 1px solid #f3f4f6;
+
+    font-size: 14px;
+
+}
+
+tbody tr:last-child td {
+
+    border-bottom: none;
+
+}
+
+tbody tr:hover {
+
+    background: #f9fafb;
+
+}
+
+.printer-name,
+
+.printer-column {
+
+    width: 350px;
+
+    max-width: 350px;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+
+}
+
+.printer-name {
+
+    color: #111827;
+
+    font-weight: 400;
+
+}
+
+.available {
+
+    font-weight: 600;
+
+}
+
+.color-badge {
+
+    padding: 4px 8px;
+
+    background: #f3f4f6;
+
+    border-radius: 5px;
+
+    font-size: 12px;
+
+}
+
+.status {
+
+    display: inline-block;
+
+    padding: 8px 9px;
+
+    border-radius: 12px;
+
+    font-size: 12px;
+
+    font-weight: 500;
+
+}
+
+.status.normal {
+
+    color: #166534;
+
+    background: #dcfce7;
+
+}
+
+.status.low-stock {
+
+    color: #92400e;
+
+    background: #fef3c7;
+
+}
+
+.status.out-of-stock {
+
+    color: #991b1b;
+
+    background: #fee2e2;
+
+}
+
+
+/* =========================================================
+   ADJUST STOCK MODAL
+   ========================================================= */
+
+.inventory-modal-overlay {
+
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 1000;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 24px;
+
+    background: rgba(15, 23, 42, 0.45);
+
+}
+
+.inventory-modal {
+
+    width: 100%;
+
+    max-width: 480px;
+
+    background: #ffffff;
+
+    border-radius: 12px;
+
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.18);
+
+}
+
+.inventory-modal-header {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: flex-start;
+
+    padding: 22px 28px;
+
+    border-bottom: 1px solid #e5e7eb;
+
+}
+
+.inventory-modal-header h2 {
+
+    margin: 0;
+
+    font-size: 20px;
+
+    color: #111827;
+
+}
+
+.inventory-modal-header p {
+
+    margin: 4px 0 0;
+
+    color: #6b7280;
+
+    font-size: 14px;
+
+}
+
+.inventory-modal-close {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    width: 32px;
+
+    height: 32px;
+
+    border: none;
+
+    border-radius: 8px;
+
+    background: #f3f4f6;
+
+    color: #374151;
+
+    font-size: 16px;
+
+    cursor: pointer;
+
+}
+
+.inventory-modal-close:hover {
+
+    background: #e5e7eb;
+
+}
+
+.inventory-adjust-form {
+
+    padding: 24px 28px;
+
+}
+
+.inventory-adjust-form .form-error {
+
+    padding: 10px 12px;
+
+    margin-bottom: 14px;
+
+    border-radius: 6px;
+
+    background: #fef2f2;
+
+    color: #b91c1c;
+
+    border: 1px solid #fecaca;
+
+    font-size: 13px;
+
+}
+
+.inventory-adjust-form .form-group {
+
+    margin-bottom: 16px;
+
+}
+
+.inventory-adjust-form label {
+
+    display: block;
+
+    margin-bottom: 6px;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+    color: #374151;
+
+}
+
+.inventory-adjust-form input,
+
+.inventory-adjust-form textarea {
+
+    width: 100%;
+
+    box-sizing: border-box;
+
+    padding: 10px 12px;
+
+    border: 1px solid #d1d5db;
+
+    border-radius: 6px;
+
+    font-size: 14px;
+
+    font-family: inherit;
+
+    outline: none;
+
+}
+
+.inventory-adjust-form input:focus,
+
+.inventory-adjust-form textarea:focus {
+
+    border-color: #2563eb;
+
+}
+
+.inventory-adjust-form input[readonly] {
+
+    background: #f9fafb;
+
+    cursor: default;
+
+}
+
+.inventory-adjust-form textarea {
+
+    min-height: 90px;
+
+    resize: vertical;
+
+}
+
+.inventory-modal-actions {
+
+    display: flex;
+
+    justify-content: flex-end;
+
+    gap: 10px;
+
+    margin-top: 8px;
+
+}
+
+.inventory-modal-actions button {
+
+    padding: 10px 18px;
+
+    border-radius: 6px;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+}
+
+.inventory-modal-actions button[type="submit"] {
+
+    border: none;
+
+    background: #2563eb;
+
+    color: #fff;
+
+}
+
+.inventory-modal-actions button[type="submit"]:hover {
+
+    background: #1d4ed8;
+
+}
+
+.inventory-modal-actions button[type="button"] {
+
+    border: 1px solid #d1d5db;
+
+    background: #fff;
+
+    color: #374151;
+
+}
+
+.inventory-modal-actions button[type="button"]:hover {
+
+    background: #f3f4f6;
+
+}
+
+.inventory-modal-actions button:disabled {
+
+    opacity: 0.6;
+
+    cursor: not-allowed;
+
+}
+
+
+/* =========================================================
+   ADJUST STOCK BUTTON
+   ========================================================= */
+
+.inventory-adjust-btn {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    padding: 6px 12px;
+
+    border: 1px solid #d1d5db;
+
+    border-radius: 6px;
+
+    background: #ffffff;
+
+    color: #374151;
+
+    font-size: 13px;
+
+    cursor: pointer;
+
+}
+
+.inventory-adjust-btn:hover {
+
+    background: #f3f4f6;
+
+}
+
+.printer-toggle-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 7px 16px;
+    border: none;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.1s ease;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+.printer-toggle-btn.activate {
+    background: #2563eb;
+    color: #ffffff;
+}
+
+.printer-toggle-btn.activate:hover:not(:disabled) {
+    background: #1d4ed8;
+    box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+}
+
+.printer-toggle-btn.deactivate {
+    background: #c22a2a;
+    color: #ffffff;
+}
+
+.printer-toggle-btn.deactivate:hover:not(:disabled) {
+    background: #c22a2a;
+    box-shadow: 0 4px 10px rgba(220, 38, 38, 0.3);
+}
+
+.printer-toggle-btn:active:not(:disabled) {
+    transform: scale(0.97);
+}
+
+.printer-toggle-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    box-shadow: none;
+}
