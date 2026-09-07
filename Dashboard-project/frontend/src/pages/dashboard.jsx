@@ -13,7 +13,7 @@ import Sidebar from "../components/Sidebar/sidebar";
 import Navbar from "../components/Navbar/navbar";
 import DashboardCard from "../components/DashboardCard/dashboardCard";
 import IssueCartridgeForm from "../components/Forms/IssueCartridgeForm/issueCartridgeForm";
-import MonthlyIssueChart from "../components/Charts/MonthlyIssueChart/monthlyIssueChart";
+import MonthlyIssueChart from "../components/Charts/CartridgeQuantitiesChart/cartridgeQuantitiesChart";
 import CartridgeQuantities from "../components/Charts/CartridgeQuantities/cartridgeQuantities";
 import RecentActivity from "../components/RecentActivity/recentActivity";
 import { apiRequest } from "../api/apiClient";

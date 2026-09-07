@@ -123,6 +123,79 @@ async def get_cartridge_quantities(
     ]
 
 
+async def get_cartridge_consumption(
+    db: AsyncSession,
+) -> list[dict]:
+
+    issued_subquery = (
+        select(
+            CartridgeIssue.cartridge_id.label(
+                "cartridge_id"
+            ),
+            func.coalesce(
+                func.sum(CartridgeIssue.quantity),
+                0,
+            ).label("issued"),
+        )
+        .group_by(
+            CartridgeIssue.cartridge_id
+        )
+        .subquery()
+    )
+
+    result = await db.execute(
+        select(
+            Cartridge.id,
+            Cartridge.model,
+
+            func.coalesce(
+                func.sum(Inventory.quantity),
+                0,
+            ).label("remaining"),
+
+            func.coalesce(
+                issued_subquery.c.issued,
+                0,
+            ).label("issued"),
+        )
+        .outerjoin(
+            Inventory,
+            Inventory.cartridge_id == Cartridge.id,
+        )
+        .outerjoin(
+            issued_subquery,
+            issued_subquery.c.cartridge_id
+            == Cartridge.id,
+        )
+        .where(
+            Cartridge.is_active.is_(True)
+        )
+        .group_by(
+            Cartridge.id,
+            Cartridge.model,
+            issued_subquery.c.issued,
+        )
+        .order_by(
+            Cartridge.model
+        )
+    )
+
+    rows = result.all()
+
+    return [
+        {
+            "cartridge_id": row.id,
+            "cartridge_model": row.model,
+            "issued": row.issued,
+            "remaining": row.remaining,
+            "total_added": (
+                row.issued + row.remaining
+            ),
+        }
+        for row in rows
+    ]
+
+
 async def get_monthly_issues(
     db: AsyncSession,
 ) -> list[dict]:
@@ -244,6 +317,7 @@ async def get_recent_activity(
         }
         for issue in issues
     ]
+
 
 async def get_inventory_details(
     db: AsyncSession,

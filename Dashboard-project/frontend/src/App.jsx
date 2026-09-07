@@ -14,6 +14,7 @@ import Locations from "./pages/Locations/Locations";
 import Engineers from "./pages/Engineers/Engineers";
 import Users from "./pages/Users/Users";
 import StockMovements from "./pages/StockMovements/StockMovements";
+import Reports from "./pages/Reports/Reports";
 
 import Login from "./pages/Login/Login";
 
@@ -193,6 +194,23 @@ function App() {
                                 ]}
                             >
                                 <StockMovements />
+                            </ProtectedRoute>
+                        }
+                    />
+
+
+                    {/* Reports */}
+
+                    <Route
+                        path="/reports"
+                        element={
+                            <ProtectedRoute
+                                allowedRoles={[
+                                    "it_admin",
+                                    "master_admin",
+                                ]}
+                            >
+                                <Reports />
                             </ProtectedRoute>
                         }
                     />

@@ -6,6 +6,7 @@ from app.db.session import get_db
 from app.models.user import User
 from app.schemas.common import ApiResponse
 from app.services.dashboard_service import (
+    get_cartridge_consumption,
     get_cartridge_quantities,
     get_dashboard_summary,
     get_inventory_details,
@@ -40,6 +41,19 @@ async def cartridge_quantities(
     _: User = Depends(get_current_user),
 ):
     data = await get_cartridge_quantities(db)
+
+    return ApiResponse(data=data)
+
+
+@router.get(
+    "/cartridge-consumption",
+    response_model=ApiResponse[list[dict]],
+)
+async def cartridge_consumption(
+    db: AsyncSession = Depends(get_db),
+    _: User = Depends(get_current_user),
+):
+    data = await get_cartridge_consumption(db)
 
     return ApiResponse(data=data)
 

@@ -14,6 +14,7 @@ from app.routers import (
     engineers,
     dashboard,
     stock_movements,
+    reports,
 )
 
 
@@ -112,6 +113,13 @@ app.include_router(
     stock_movements.router,
     prefix=f"{API_V1}/stock-movements",
     tags=["Stock Movements"],
+)
+
+
+app.include_router(
+    reports.router,
+    prefix=f"{API_V1}/reports",
+    tags=["Reports"],
 )
 
 

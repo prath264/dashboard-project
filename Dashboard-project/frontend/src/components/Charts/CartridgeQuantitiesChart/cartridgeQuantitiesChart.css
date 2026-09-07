@@ -1,0 +1,331 @@
+.cartridge-consumption-card {
+
+    min-width: 0;
+
+    padding: 20px;
+
+    background: #ffffff;
+
+    border: 1px solid #d1d5db;
+
+    border-radius: 12px;
+
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+
+}
+
+
+.cartridge-consumption-header {
+
+    display: flex;
+
+    align-items: flex-start;
+
+    justify-content: space-between;
+
+    gap: 16px;
+
+}
+
+
+.cartridge-consumption-header h3 {
+
+    margin: 0;
+
+    font-size: 18px;
+
+    font-weight: 600;
+
+    color: #111827;
+
+}
+
+
+.cartridge-consumption-header p {
+
+    margin: 5px 0 0;
+
+    color: #6b7280;
+
+    font-size: 13px;
+
+}
+
+
+.consumption-total {
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: flex-end;
+
+    gap: 2px;
+
+    padding: 7px 12px;
+
+    background: #eff6ff;
+
+    border: 1px solid #bfdbfe;
+
+    border-radius: 10px;
+
+    white-space: nowrap;
+
+}
+
+
+.consumption-total span {
+
+    color: #6b7280;
+
+    font-size: 11px;
+
+    font-weight: 500;
+
+}
+
+
+.consumption-total strong {
+
+    color: #1d4ed8;
+
+    font-size: 16px;
+
+    font-weight: 700;
+
+}
+
+
+.consumption-legend {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 20px;
+
+    margin-top: 14px;
+
+}
+
+
+.legend-item {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    color: #6b7280;
+
+    font-size: 12px;
+
+}
+
+
+.legend-item strong {
+
+    color: #374151;
+
+    font-weight: 700;
+
+}
+
+
+.legend-dot {
+
+    width: 9px;
+
+    height: 9px;
+
+    border-radius: 50%;
+
+    display: inline-block;
+
+}
+
+
+.issued-dot {
+
+    background: #f59e0b;
+
+}
+
+
+.remaining-dot {
+
+    background: #10b981;
+
+}
+
+
+.cartridge-consumption-chart {
+
+    width: 100%;
+
+    height: 292px;
+
+    margin-top: 8px;
+
+}
+
+
+.consumption-tooltip {
+
+    min-width: 170px;
+
+    padding: 10px 12px;
+
+    background: #111827;
+
+    border-radius: 8px;
+
+    color: #ffffff;
+
+    font-size: 12px;
+
+    box-shadow: 0 8px 20px rgba(17, 24, 39, 0.2);
+
+}
+
+
+.tooltip-title {
+
+    display: block;
+
+    margin-bottom: 8px;
+
+    color: #ffffff;
+
+    font-size: 13px;
+
+}
+
+
+.tooltip-row {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    margin-top: 5px;
+
+}
+
+
+.tooltip-row span:nth-child(2) {
+
+    flex: 1;
+
+}
+
+
+.tooltip-row strong {
+
+    font-weight: 700;
+
+}
+
+
+.tooltip-dot {
+
+    width: 7px;
+
+    height: 7px;
+
+    border-radius: 50%;
+
+}
+
+
+.tooltip-row.issued .tooltip-dot {
+
+    background: #f59e0b;
+
+}
+
+
+.tooltip-row.remaining .tooltip-dot {
+
+    background: #10b981;
+
+}
+
+
+.tooltip-total {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    gap: 15px;
+
+    margin-top: 9px;
+
+    padding-top: 8px;
+
+    border-top: 1px solid #374151;
+
+    color: #d1d5db;
+
+}
+
+
+.tooltip-total strong {
+
+    color: #ffffff;
+
+}
+
+
+.chart-message {
+
+    height: 100%;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    color: #6b7280;
+
+    font-size: 14px;
+
+}
+
+
+.chart-message.error {
+
+    color: #b91c1c;
+
+}
+
+
+@media (max-width: 640px) {
+
+    .cartridge-consumption-header {
+
+        flex-direction: column;
+
+    }
+
+
+    .consumption-total {
+
+        align-items: flex-start;
+
+    }
+
+
+    .consumption-legend {
+
+        flex-wrap: wrap;
+
+    }
+
+}

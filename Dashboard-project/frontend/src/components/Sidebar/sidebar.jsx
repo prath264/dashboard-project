@@ -118,6 +118,19 @@ function Sidebar() {
                         </li>
 
                         <li
+                            className={
+                                isActive("/reports")
+                                    ? "active"
+                                    : ""
+                            }
+                            onClick={() =>
+                                navigate("/reports")
+                            }
+                        >
+                            Reports
+                        </li>
+
+                        <li
                             className="master-menu"
                             onClick={handleMasterClick}
                         >
