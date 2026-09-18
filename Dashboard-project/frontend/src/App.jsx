@@ -11,6 +11,7 @@ import PendingApprovals from "./pages/PendingApprovals/PendingApprovals";
 import CartridgeRequests from "./pages/CartridgeRequests/CartridgeRequests";
 import InstallationHistory from "./pages/InstallationHistory/InstallationHistory";
 import Locations from "./pages/Locations/Locations";
+import PrinterAssignments from "./pages/PrinterAssignments/PrinterAssignments";
 import Engineers from "./pages/Engineers/Engineers";
 import Users from "./pages/Users/Users";
 import StockMovements from "./pages/StockMovements/StockMovements";
@@ -144,6 +145,20 @@ function App() {
                                 ]}
                             >
                                 <Locations />
+                            </ProtectedRoute>
+                        }
+                    />
+
+                    <Route
+                        path="/printer-assignments"
+                        element={
+                            <ProtectedRoute
+                                allowedRoles={[
+                                    "it_admin",
+                                    "master_admin",
+                                ]}
+                            >
+                                <PrinterAssignments />
                             </ProtectedRoute>
                         }
                     />

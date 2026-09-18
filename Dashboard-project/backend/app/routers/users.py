@@ -35,9 +35,13 @@ async def list_users(
     page_size: int = Query(20, ge=1, le=100),
     role: UserRole | None = None,
     is_active: bool | None = None,
+    search: str | None = Query(default=None),
     db: AsyncSession = Depends(get_db),
     _: User = Depends(
-        require_roles(UserRole.master_admin)
+        require_roles(
+            UserRole.it_admin,
+            UserRole.master_admin,
+        )
     ),
 ) -> ApiResponse[list[UserRead]]:
 
@@ -47,6 +51,7 @@ async def list_users(
         page_size=page_size,
         role=role,
         is_active=is_active,
+        search=search,
     )
 
     return ApiResponse(

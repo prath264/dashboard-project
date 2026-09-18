@@ -1,3 +1,25 @@
+.reports-container {
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.main-content {
+    flex: 1;
+    min-width: 0;
+    min-height: 0;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.reports-page {
+    flex: 1;
+    padding: 24px;
+    background: #f3f4f6;
+    overflow-y: auto;
+}
+
 .reports-page {
     flex: 1;
     padding: 24px;

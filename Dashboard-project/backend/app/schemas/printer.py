@@ -16,6 +16,11 @@ class PrinterCreate(BaseModel):
 
     location_id: int
 
+    department: str | None = Field(
+        default=None,
+        max_length=255,
+    )
+
     is_active: bool = True
 
 
@@ -32,5 +37,6 @@ class PrinterResponse(BaseModel):
     model: str
     serial_number: str | None
     location_id: int
+    department: str | None
     is_active: bool
     created_at: datetime

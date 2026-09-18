@@ -1,5 +1,5 @@
 import "./IssueCartridgeForm.css";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 
 import { apiRequest } from "../../../api/apiClient";
 import { useAuth } from "../../../context/AuthContext";
@@ -9,6 +9,7 @@ function IssueCartridgeForm({ closeForm }) {
 
     const [employee, setEmployee] = useState("");
     const [employeeId, setEmployeeId] = useState("");
+    const [selectedUserId, setSelectedUserId] = useState("");
     const [department, setDepartment] = useState("");
 
     const [location, setLocation] = useState("");
@@ -33,6 +34,12 @@ function IssueCartridgeForm({ closeForm }) {
     );
     const [remarks, setRemarks] = useState("");
     const [error, setError] = useState("");
+
+    const [searchResults, setSearchResults] = useState([]);
+    const [showSearchResults, setShowSearchResults] = useState(false);
+    const [searching, setSearching] = useState(false);
+    const searchTimeoutRef = useRef(null);
+    const searchInputRef = useRef(null);
 
     useEffect(() => {
         document.body.style.overflow = "hidden";
@@ -160,41 +167,85 @@ function IssueCartridgeForm({ closeForm }) {
         }
     }, [printerId, accessToken]);
 
-    const handleEmployee = (event) => {
-        const name = event.target.value;
+    const fetchUsers = useCallback(async (query) => {
+        if (!query.trim() || !accessToken) {
+            setSearchResults([]);
+            return;
+        }
 
-        setEmployee(name);
+        setSearching(true);
+        try {
+            const response = await apiRequest(
+                `/employees?search=${encodeURIComponent(query)}&is_active=true&page_size=20`,
+                {},
+                accessToken
+            );
+            setSearchResults(response?.data || []);
+        } catch (err) {
+            setSearchResults([]);
+            setError(err.message || "Failed to search employees.");
+        } finally {
+            setSearching(false);
+        }
+    }, [accessToken]);
 
-        const employeeData = {
-            "Sandesh Kadam": {
-                id: 1,
-                department: "IT",
-            },
-            "Kushal Nehete": {
-                id: 2,
-                department: "IT",
-            },
-            "Prathamesh Gholap": {
-                id: 3,
-                department: "IT",
-            },
-        };
+    const handleEmployeeSearch = (event) => {
+        const value = event.target.value;
+        setEmployee(value);
 
-        const selected = employeeData[name];
+        if (searchTimeoutRef.current) {
+            clearTimeout(searchTimeoutRef.current);
+        }
 
-        if (selected) {
-            setEmployeeId(selected.id);
-            setDepartment(selected.department);
-        } else {
-            setEmployeeId("");
-            setDepartment("");
+        searchTimeoutRef.current = setTimeout(() => {
+            fetchUsers(value);
+            setShowSearchResults(true);
+        }, 300);
+    };
+
+    const handleEmployeeSelect = async (employee) => {
+        setEmployee(employee.name);
+        setSelectedUserId(employee.id);
+        setEmployeeId(employee.employee_id || "");
+        setDepartment(employee.department || "");
+        setShowSearchResults(false);
+        setSearchResults([]);
+
+        try {
+            const response = await apiRequest(
+                `/printer-assignments/for-user/${employee.id}`,
+                {},
+                accessToken
+            );
+            const autoFill = response?.data;
+            if (autoFill) {
+                setPrinterId(String(autoFill.printer_id));
+                setLocation(String(autoFill.location_id));
+            }
+        } catch (err) {
+            setError(
+                err.message ||
+                "Failed to load the employee's printer assignment."
+            );
+        }
+    };
+
+    const handleEmployeeBlur = () => {
+        setTimeout(() => {
+            setShowSearchResults(false);
+        }, 200);
+    };
+
+    const handleEmployeeFocus = () => {
+        if (employee.trim() && searchResults.length > 0) {
+            setShowSearchResults(true);
         }
     };
 
     const handleSubmit = async (event) => {
         event.preventDefault();
 
-        if (!employeeId) {
+        if (!selectedUserId) {
             setError("Please select an employee.");
             return;
         }
@@ -233,9 +284,7 @@ function IssueCartridgeForm({ closeForm }) {
                 {
                     method: "POST",
                     body: {
-                        // IMPORTANT:
-                        // This was missing from your previous payload.
-                        requester_id: Number(employeeId),
+                        requester_id: Number(selectedUserId),
 
                         location_id: Number(location),
                         engineer_id: Number(engineer),
@@ -287,19 +336,53 @@ function IssueCartridgeForm({ closeForm }) {
                         Employee Name
                     </label>
 
-                    <input
-                        list="employees"
-                        value={employee}
-                        onChange={handleEmployee}
-                        placeholder="Search Employee"
-                        required
-                    />
+                    <div className="search-wrapper" ref={searchInputRef}>
+                        <input
+                            type="text"
+                            value={employee}
+                            onChange={handleEmployeeSearch}
+                            onFocus={handleEmployeeFocus}
+                            onBlur={handleEmployeeBlur}
+                            placeholder={
+                                searching
+                                    ? "Searching employees..."
+                                    : "Search Employee (name, ID, department)"
+                            }
+                            required
+                            autoComplete="off"
+                        />
 
-                    <datalist id="employees">
-                        <option value="Sandesh Kadam" />
-                        <option value="Kushal Nehete" />
-                        <option value="Prathamesh Gholap" />
-                    </datalist>
+                        {showSearchResults && searchResults.length > 0 && (
+                            <ul className="search-results">
+                                {searchResults.map((employee) => (
+                                    <li
+                                        key={employee.id}
+                                        onClick={() =>
+                                            handleEmployeeSelect(employee)
+                                        }
+                                        className="search-result-item"
+                                    >
+                                        <span className="user-name">
+                                            {employee.name}
+                                        </span>
+                                        <span className="user-meta">
+                                            {employee.employee_id}
+                                            {employee.department && ` · ${employee.department}`}
+                                        </span>
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
+
+                        {showSearchResults &&
+                            !searching &&
+                            employee.trim() &&
+                            searchResults.length === 0 && (
+                                <div className="search-no-results">
+                                    No employees found
+                                </div>
+                            )}
+                    </div>
 
                     <label>
                         Employee ID
@@ -308,7 +391,9 @@ function IssueCartridgeForm({ closeForm }) {
                     <input
                         type="text"
                         value={employeeId}
-                        readOnly
+                        onChange={(event) =>
+                            setEmployeeId(event.target.value)
+                        }
                     />
 
                     <label>
@@ -318,7 +403,9 @@ function IssueCartridgeForm({ closeForm }) {
                     <input
                         type="text"
                         value={department}
-                        readOnly
+                        onChange={(event) =>
+                            setDepartment(event.target.value)
+                        }
                     />
 
                     <label>

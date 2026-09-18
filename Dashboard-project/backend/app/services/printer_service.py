@@ -53,6 +53,7 @@ async def create_printer(
         model=data.model,
         serial_number=data.serial_number,
         location_id=data.location_id,
+        department=data.department,
         is_active=data.is_active,
     )
 

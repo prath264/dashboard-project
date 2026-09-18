@@ -278,7 +278,7 @@ async def get_recent_activity(
 
             "employee_id": issue.employee_id,
             "employee_name": (
-                issue.employee.username
+                issue.employee.name
                 if issue.employee
                 else None
             ),
@@ -365,7 +365,7 @@ async def get_monthly_issues_list(
         {
             "id": issue.id,
             "employee_name": (
-                issue.employee.username
+                issue.employee.name
                 if issue.employee
                 else None
             ),

@@ -27,6 +27,11 @@ class Printer(Base):
         nullable=True,
     )
 
+    department: Mapped[str | None] = mapped_column(
+        String(255),
+        nullable=True,
+    )
+
     location_id: Mapped[int] = mapped_column(
         ForeignKey("locations.id", ondelete="RESTRICT"),
         nullable=False,

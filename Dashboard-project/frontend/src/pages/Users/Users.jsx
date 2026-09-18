@@ -204,7 +204,7 @@ function Users() {
                 <main className="users-page">
                     <header className="users-header">
                         <div>
-                            <h1>Users</h1>
+                            <h1>Login Accounts</h1>
                         </div>
 
                         {canManageUsers && (

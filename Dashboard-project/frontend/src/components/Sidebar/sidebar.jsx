@@ -20,6 +20,7 @@ function Sidebar() {
 
     const masterPages = [
         "/locations",
+        "/printer-assignments",
         "/engineers",
         "/users"
     ];
@@ -170,6 +171,21 @@ function Sidebar() {
 
                         <li
                             className={
+                                isActive("/printer-assignments")
+                                    ? "active"
+                                    : ""
+                            }
+                            onClick={() =>
+                                handleMasterPageClick(
+                                    "/printer-assignments"
+                                )
+                            }
+                        >
+                            Printer Assignment
+                        </li>
+
+                        <li
+                            className={
                                 isActive("/engineers")
                                     ? "active"
                                     : ""
@@ -198,7 +214,7 @@ function Sidebar() {
                                     )
                                 }
                             >
-                                Users
+                                Accounts
                             </li>
                         )}
 

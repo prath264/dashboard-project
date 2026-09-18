@@ -1,4 +1,4 @@
-from sqlalchemy import func, select
+from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.security import hash_password
@@ -44,6 +44,7 @@ class UserService:
         page_size: int,
         role: UserRole | None = None,
         is_active: bool | None = None,
+        search: str | None = None,
     ) -> tuple[list[User], int]:
 
         query = select(User)
@@ -70,6 +71,16 @@ class UserService:
             count_query = count_query.where(
                 User.is_active == is_active
             )
+
+        if search is not None:
+            search_term = f"%{search}%"
+            search_filter = or_(
+                User.username.ilike(search_term),
+                User.employee_id.ilike(search_term),
+                User.email.ilike(search_term),
+            )
+            query = query.where(search_filter)
+            count_query = count_query.where(search_filter)
 
         total = (
             await db.execute(count_query)

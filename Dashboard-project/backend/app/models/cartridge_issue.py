@@ -42,7 +42,7 @@ class CartridgeIssue(Base):
 
     employee_id: Mapped[int] = mapped_column(
         ForeignKey(
-            "users.id",
+            "employees.id",
             ondelete="RESTRICT",
         ),
         nullable=False,
@@ -110,7 +110,7 @@ class CartridgeIssue(Base):
     # Relationships
 
     employee = relationship(
-        "User",
+        "Employee",
         foreign_keys=[employee_id],
     )
 

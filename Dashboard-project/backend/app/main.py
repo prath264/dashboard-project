@@ -5,6 +5,7 @@ from app.core.config import get_settings
 from app.routers import (
     auth,
     users,
+    employees,
     cartridge_issues,
     cartridge_requests,
     printers,
@@ -15,6 +16,7 @@ from app.routers import (
     dashboard,
     stock_movements,
     reports,
+    printer_assignments,
 )
 
 
@@ -50,6 +52,13 @@ app.include_router(
     users.router,
     prefix=f"{API_V1}/users",
     tags=["users"],
+)
+
+
+app.include_router(
+    employees.router,
+    prefix=f"{API_V1}/employees",
+    tags=["Employees"],
 )
 
 
@@ -120,6 +129,12 @@ app.include_router(
     reports.router,
     prefix=f"{API_V1}/reports",
     tags=["Reports"],
+)
+
+app.include_router(
+    printer_assignments.router,
+    prefix=f"{API_V1}/printer-assignments",
+    tags=["Printer Assignments"],
 )
 
 
