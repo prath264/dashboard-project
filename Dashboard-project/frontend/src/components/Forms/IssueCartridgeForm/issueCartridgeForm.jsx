@@ -42,10 +42,12 @@ function IssueCartridgeForm({ closeForm }) {
     const searchInputRef = useRef(null);
 
     useEffect(() => {
+        const previousOverflow = document.body.style.overflow;
+
         document.body.style.overflow = "hidden";
 
         return () => {
-            document.body.style.overflow = "";
+            document.body.style.overflow = previousOverflow;
         };
     }, []);
 
@@ -63,9 +65,7 @@ function IssueCartridgeForm({ closeForm }) {
 
                 setLocations(response?.data || []);
             } catch (err) {
-                setError(
-                    err.message || "Failed to load locations."
-                );
+                setError(err.message || "Failed to load locations.");
             } finally {
                 setLoadingLocations(false);
             }
@@ -90,9 +90,7 @@ function IssueCartridgeForm({ closeForm }) {
 
                 setEngineers(response?.data || []);
             } catch (err) {
-                setError(
-                    err.message || "Failed to load engineers."
-                );
+                setError(err.message || "Failed to load engineers.");
             } finally {
                 setLoadingEngineers(false);
             }
@@ -117,9 +115,7 @@ function IssueCartridgeForm({ closeForm }) {
 
                 setPrinters(response?.data || []);
             } catch (err) {
-                setError(
-                    err.message || "Failed to load printers."
-                );
+                setError(err.message || "Failed to load printers.");
             } finally {
                 setLoadingPrinters(false);
             }
@@ -152,10 +148,8 @@ function IssueCartridgeForm({ closeForm }) {
                 setCartridges(response?.data || []);
             } catch (err) {
                 setCartridges([]);
-
                 setError(
-                    err.message ||
-                    "Failed to load cartridges."
+                    err.message || "Failed to load cartridges."
                 );
             } finally {
                 setLoadingCartridges(false);
@@ -174,16 +168,24 @@ function IssueCartridgeForm({ closeForm }) {
         }
 
         setSearching(true);
+
         try {
             const response = await apiRequest(
                 `/employees?search=${encodeURIComponent(query)}&is_active=true&page_size=20`,
                 {},
                 accessToken
             );
-            setSearchResults(response?.data || []);
+
+            setSearchResults(
+                response?.data?.data ||
+                response?.data ||
+                []
+            );
         } catch (err) {
             setSearchResults([]);
-            setError(err.message || "Failed to search employees.");
+            setError(
+                err.message || "Failed to search employees."
+            );
         } finally {
             setSearching(false);
         }
@@ -191,10 +193,20 @@ function IssueCartridgeForm({ closeForm }) {
 
     const handleEmployeeSearch = (event) => {
         const value = event.target.value;
+
         setEmployee(value);
+        setSelectedUserId("");
+        setEmployeeId("");
+        setDepartment("");
 
         if (searchTimeoutRef.current) {
             clearTimeout(searchTimeoutRef.current);
+        }
+
+        if (!value.trim()) {
+            setSearchResults([]);
+            setShowSearchResults(false);
+            return;
         }
 
         searchTimeoutRef.current = setTimeout(() => {
@@ -203,21 +215,27 @@ function IssueCartridgeForm({ closeForm }) {
         }, 300);
     };
 
-    const handleEmployeeSelect = async (employee) => {
-        setEmployee(employee.name);
-        setSelectedUserId(employee.id);
-        setEmployeeId(employee.employee_id || "");
-        setDepartment(employee.department || "");
+    const handleEmployeeSelect = async (selectedEmployee) => {
+        if (searchTimeoutRef.current) {
+            clearTimeout(searchTimeoutRef.current);
+        }
+
+        setEmployee(selectedEmployee.name);
+        setSelectedUserId(selectedEmployee.id);
+        setEmployeeId(selectedEmployee.employee_id || "");
+        setDepartment(selectedEmployee.department || "");
         setShowSearchResults(false);
         setSearchResults([]);
 
         try {
             const response = await apiRequest(
-                `/printer-assignments/for-user/${employee.id}`,
+                `/printer-assignments/for-user/${selectedEmployee.id}`,
                 {},
                 accessToken
             );
+
             const autoFill = response?.data;
+
             if (autoFill) {
                 setPrinterId(String(autoFill.printer_id));
                 setLocation(String(autoFill.location_id));
@@ -231,13 +249,14 @@ function IssueCartridgeForm({ closeForm }) {
     };
 
     const handleEmployeeBlur = () => {
-        setTimeout(() => {
-            setShowSearchResults(false);
-        }, 200);
+        setShowSearchResults(false);
     };
 
     const handleEmployeeFocus = () => {
-        if (employee.trim() && searchResults.length > 0) {
+        if (
+            employee.trim() &&
+            searchResults.length > 0
+        ) {
             setShowSearchResults(true);
         }
     };
@@ -285,7 +304,6 @@ function IssueCartridgeForm({ closeForm }) {
                     method: "POST",
                     body: {
                         requester_id: Number(selectedUserId),
-
                         location_id: Number(location),
                         engineer_id: Number(engineer),
                         printer_id: Number(printerId),
@@ -297,9 +315,7 @@ function IssueCartridgeForm({ closeForm }) {
                 accessToken
             );
 
-            alert(
-                "Cartridge request submitted successfully."
-            );
+            alert("Cartridge request submitted successfully.");
 
             closeForm();
         } catch (err) {
@@ -336,7 +352,10 @@ function IssueCartridgeForm({ closeForm }) {
                         Employee Name
                     </label>
 
-                    <div className="search-wrapper" ref={searchInputRef}>
+                    <div
+                        className="search-wrapper"
+                        ref={searchInputRef}
+                    >
                         <input
                             type="text"
                             value={employee}
@@ -352,27 +371,36 @@ function IssueCartridgeForm({ closeForm }) {
                             autoComplete="off"
                         />
 
-                        {showSearchResults && searchResults.length > 0 && (
-                            <ul className="search-results">
-                                {searchResults.map((employee) => (
-                                    <li
-                                        key={employee.id}
-                                        onClick={() =>
-                                            handleEmployeeSelect(employee)
-                                        }
-                                        className="search-result-item"
-                                    >
-                                        <span className="user-name">
-                                            {employee.name}
-                                        </span>
-                                        <span className="user-meta">
-                                            {employee.employee_id}
-                                            {employee.department && ` · ${employee.department}`}
-                                        </span>
-                                    </li>
-                                ))}
-                            </ul>
-                        )}
+                        {showSearchResults &&
+                            searchResults.length > 0 && (
+                                <ul className="search-results">
+                                    {searchResults.map(
+                                        (selectedEmployee) => (
+                                            <li
+                                                key={selectedEmployee.id}
+                                                onMouseDown={(event) => {
+                                                    event.preventDefault();
+                                                    handleEmployeeSelect(
+                                                        selectedEmployee
+                                                    );
+                                                }}
+                                                className="search-result-item"
+                                            >
+                                                <span className="user-name">
+                                                    {selectedEmployee.name}
+                                                </span>
+
+                                                <span className="user-meta">
+                                                    {selectedEmployee.employee_id}
+
+                                                    {selectedEmployee.department &&
+                                                        ` · ${selectedEmployee.department}`}
+                                                </span>
+                                            </li>
+                                        )
+                                    )}
+                                </ul>
+                            )}
 
                         {showSearchResults &&
                             !searching &&
@@ -488,6 +516,7 @@ function IssueCartridgeForm({ closeForm }) {
                                 value={printer.id}
                             >
                                 {printer.model}
+
                                 {printer.serial_number
                                     ? ` - ${printer.serial_number}`
                                     : ""}
@@ -524,6 +553,7 @@ function IssueCartridgeForm({ closeForm }) {
                                 value={cartridge.id}
                             >
                                 {cartridge.model}
+
                                 {cartridge.color
                                     ? ` - ${cartridge.color}`
                                     : ""}

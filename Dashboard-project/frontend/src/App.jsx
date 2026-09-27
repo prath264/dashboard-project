@@ -14,6 +14,7 @@ import Locations from "./pages/Locations/Locations";
 import PrinterAssignments from "./pages/PrinterAssignments/PrinterAssignments";
 import Engineers from "./pages/Engineers/Engineers";
 import Users from "./pages/Users/Users";
+import Employees from "./pages/Employees/Employees";
 import StockMovements from "./pages/StockMovements/StockMovements";
 import Reports from "./pages/Reports/Reports";
 
@@ -176,6 +177,23 @@ function App() {
                                 ]}
                             >
                                 <Engineers />
+                            </ProtectedRoute>
+                        }
+                    />
+
+
+                    {/* Employees */}
+
+                    <Route
+                        path="/employees"
+                        element={
+                            <ProtectedRoute
+                                allowedRoles={[
+                                    "it_admin",
+                                    "master_admin",
+                                ]}
+                            >
+                                <Employees />
                             </ProtectedRoute>
                         }
                     />

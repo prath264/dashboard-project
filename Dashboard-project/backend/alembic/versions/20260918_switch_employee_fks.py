@@ -18,16 +18,32 @@ depends_on: Union[str, Sequence[str], None] = None
 
 def upgrade() -> None:
     # Clear data that would conflict with new FKs
-    op.execute("DELETE FROM stock_movements WHERE reference_id IN (SELECT id FROM cartridge_issues)")
+    op.execute(
+        "DELETE FROM stock_movements "
+        "WHERE reference_id IN (SELECT id FROM cartridge_issues)"
+    )
     op.execute("TRUNCATE TABLE cartridge_issues RESTART IDENTITY CASCADE")
     op.execute("TRUNCATE TABLE printer_assignments RESTART IDENTITY CASCADE")
 
     # Drop existing FK constraints
-    op.drop_constraint("cartridge_issues_employee_id_fkey", "cartridge_issues", type_="foreignkey")
-    op.drop_constraint("printer_assignments_user_id_fkey", "printer_assignments", type_="foreignkey")
+    op.drop_constraint(
+        "cartridge_issues_employee_id_fkey",
+        "cartridge_issues",
+        type_="foreignkey",
+    )
+    op.drop_constraint(
+        "printer_assignments_user_id_fkey",
+        "printer_assignments",
+        type_="foreignkey",
+    )
 
     # Change cartridge_issues.employee_id to reference employees.id
-    op.alter_column("cartridge_issues", "employee_id", existing_type=sa.Integer(), nullable=False)
+    op.alter_column(
+        "cartridge_issues",
+        "employee_id",
+        existing_type=sa.Integer(),
+        nullable=False,
+    )
     op.create_foreign_key(
         "cartridge_issues_employee_id_fkey",
         "cartridge_issues",
@@ -38,7 +54,12 @@ def upgrade() -> None:
     )
 
     # Change printer_assignments.user_id to reference employees.id
-    op.alter_column("printer_assignments", "user_id", existing_type=sa.Integer(), nullable=False)
+    op.alter_column(
+        "printer_assignments",
+        "user_id",
+        existing_type=sa.Integer(),
+        nullable=False,
+    )
     op.create_foreign_key(
         "printer_assignments_user_id_fkey",
         "printer_assignments",
@@ -53,8 +74,16 @@ def upgrade() -> None:
 
 def downgrade() -> None:
     # Drop new FK constraints
-    op.drop_constraint("cartridge_issues_employee_id_fkey", "cartridge_issues", type_="foreignkey")
-    op.drop_constraint("printer_assignments_user_id_fkey", "printer_assignments", type_="foreignkey")
+    op.drop_constraint(
+        "cartridge_issues_employee_id_fkey",
+        "cartridge_issues",
+        type_="foreignkey",
+    )
+    op.drop_constraint(
+        "printer_assignments_user_id_fkey",
+        "printer_assignments",
+        type_="foreignkey",
+    )
 
     # Restore cartridge_issues.employee_id to reference users.id
     op.create_foreign_key(
@@ -76,4 +105,4 @@ def downgrade() -> None:
         ondelete="RESTRICT",
     )
 
-    # Note: Data truncated in upgrade cannot be restored in downgrade
+    # Note: data truncated in upgrade cannot be restored in downgrade

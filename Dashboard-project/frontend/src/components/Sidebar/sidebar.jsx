@@ -22,7 +22,8 @@ function Sidebar() {
         "/locations",
         "/printer-assignments",
         "/engineers",
-        "/users"
+        "/users",
+        "/employees"
     ];
 
     const [masterOpen, setMasterOpen] = useState(
@@ -217,6 +218,21 @@ function Sidebar() {
                                 Accounts
                             </li>
                         )}
+
+                        <li
+                            className={
+                                isActive("/employees")
+                                    ? "active"
+                                    : ""
+                            }
+                            onClick={() =>
+                                handleMasterPageClick(
+                                    "/employees"
+                                )
+                            }
+                        >
+                            Employees
+                        </li>
 
                     </ul>
                 )}
