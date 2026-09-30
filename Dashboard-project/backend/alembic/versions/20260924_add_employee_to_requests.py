@@ -5,8 +5,8 @@ logged the request). The employee the cartridge is issued for was previously
 guessed at install time by matching users.employee_id to employees.employee_id.
 This adds an explicit cartridge_requests.employee_id -> employees.id.
 
-Revision ID: 20260924_add_employee_to_requests
-Revises: 20260923_replace_mmrcl_data
+Revision ID: 20260924_add_request_employee
+Revises: 20260925_backfill_issue_stock
 """
 
 from typing import Sequence, Union
@@ -15,8 +15,8 @@ from alembic import op
 import sqlalchemy as sa
 
 
-revision: str = "20260924_add_employee_to_requests"
-down_revision: Union[str, None] = "20260923_replace_mmrcl_data"
+revision: str = "20260924_add_request_employee"
+down_revision: Union[str, None] = "20260925_backfill_issue_stock"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 

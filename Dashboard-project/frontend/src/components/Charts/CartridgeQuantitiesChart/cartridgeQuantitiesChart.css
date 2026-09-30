@@ -172,6 +172,15 @@
 }
 
 
+.cartridge-consumption-chart--scroll {
+
+    overflow-x: auto;
+
+    overflow-y: hidden;
+
+}
+
+
 .consumption-tooltip {
 
     min-width: 170px;

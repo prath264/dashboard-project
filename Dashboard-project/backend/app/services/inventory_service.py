@@ -5,6 +5,7 @@ from app.models.cartridge import Cartridge
 from app.models.inventory import Inventory
 from app.models.location import Location
 from app.models.printer import Printer
+from app.core.constants import LOW_STOCK_THRESHOLD_RATIO
 from app.models.stock_movement import (
     StockMovement,
     StockMovementType,
@@ -67,7 +68,7 @@ async def get_inventory(
 
         if available <= 0:
             stock_status = "Out of Stock"
-        elif available <= row.reorder:
+        elif total > 0 and available <= total * LOW_STOCK_THRESHOLD_RATIO:
             stock_status = "Low Stock"
         else:
             stock_status = "Normal"
@@ -171,3 +172,21 @@ async def adjust_inventory(
         raise ValueError("New quantity is the same as current quantity.")
 
     inventory_row.quantity = new_quantity
+
+    await create_stock_movement(
+        session=db,
+        cartridge_id=cartridge_id,
+        movement_type=StockMovementType.ADJUSTMENT,
+        quantity=delta,
+        performed_by=performed_by,
+        remarks=reason,
+    )
+
+    await db.commit()
+
+    return {
+        "cartridge_id": cartridge_id,
+        "old_quantity": old_quantity,
+        "new_quantity": new_quantity,
+        "delta": delta,
+    }

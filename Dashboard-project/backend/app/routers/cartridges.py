@@ -7,11 +7,13 @@ from app.models.user import User, UserRole
 from app.schemas.cartridge import (
     CartridgeCreate,
     CartridgeResponse,
+    CartridgeUpdate,
 )
 from app.schemas.common import ApiResponse
 from app.services.cartridge_service import (
     create_or_receive_cartridge,
     list_cartridges,
+    update_cartridge,
 )
 
 
@@ -74,6 +76,40 @@ async def add_cartridge(
     except ValueError as exc:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
+            detail=str(exc),
+        ) from exc
+
+    return ApiResponse(
+        data=CartridgeResponse.model_validate(
+            cartridge
+        )
+    )
+
+
+@router.patch(
+    "/{cartridge_id}",
+    response_model=ApiResponse[CartridgeResponse],
+)
+async def update_cartridge_model(
+    cartridge_id: int,
+    payload: CartridgeUpdate,
+    db: AsyncSession = Depends(get_db),
+    _: User = Depends(
+        require_roles(
+            UserRole.it_admin,
+            UserRole.master_admin,
+        )
+    ),
+):
+    try:
+        cartridge = await update_cartridge(
+            db,
+            cartridge_id,
+            payload,
+        )
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
             detail=str(exc),
         ) from exc
 

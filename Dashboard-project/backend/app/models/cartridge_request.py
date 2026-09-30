@@ -29,6 +29,12 @@ class CartridgeRequest(Base):
         nullable=False,
     )
 
+    employee_id: Mapped[int] = mapped_column(
+        ForeignKey("employees.id", ondelete="RESTRICT"),
+        nullable=False,
+        index=True,
+    )
+
     location_id: Mapped[int] = mapped_column(
         ForeignKey("locations.id"),
         nullable=False,
@@ -94,6 +100,11 @@ class CartridgeRequest(Base):
     requester = relationship(
         "User",
         foreign_keys=[requester_id],
+    )
+
+    employee = relationship(
+        "Employee",
+        foreign_keys=[employee_id],
     )
 
     location = relationship(

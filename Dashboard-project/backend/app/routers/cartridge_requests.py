@@ -97,7 +97,7 @@ async def get_request(
 async def create_request(
     payload: CartridgeRequestCreate,
     db: AsyncSession = Depends(get_db),
-    _: User = Depends(
+    current_user: User = Depends(
         require_roles(
             UserRole.fms_it,
             UserRole.it_admin,
@@ -108,6 +108,7 @@ async def create_request(
     request = await create_cartridge_request(
         db,
         payload,
+        requester_id=current_user.id,
     )
 
     await db.commit()

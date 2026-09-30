@@ -29,6 +29,14 @@ class CartridgeCreate(BaseModel):
     remarks: str | None = None
 
 
+class CartridgeUpdate(BaseModel):
+    model: str | None = Field(
+        default=None,
+        min_length=1,
+        max_length=150,
+    )
+
+
 class CartridgeResponse(BaseModel):
     model_config = ConfigDict(
         from_attributes=True

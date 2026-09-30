@@ -133,6 +133,14 @@ function CartridgeQuantitiesChart() {
     }, [accessToken]);
 
 
+    // Lowest remaining stock first, so the cartridges that most need
+    // attention are the first ones visible before scrolling.
+    const sortedData = [...data].sort(
+        (a, b) =>
+            Number(a.remaining || 0) -
+            Number(b.remaining || 0)
+    );
+
     const totalAdded = data.reduce(
         (sum, item) =>
             sum + Number(item.total_added || 0),
@@ -229,7 +237,7 @@ function CartridgeQuantitiesChart() {
             </div>
 
 
-            <div className="cartridge-consumption-chart">
+            <div className="cartridge-consumption-chart cartridge-consumption-chart--scroll">
 
                 {loading && (
 
@@ -266,12 +274,15 @@ function CartridgeQuantitiesChart() {
                     data.length > 0 && (
 
                         <ResponsiveContainer
-                            width="100%"
+                            width={Math.max(
+                                600,
+                                sortedData.length * 110
+                            )}
                             height="100%"
                         >
 
                             <BarChart
-                                data={data}
+                                data={sortedData}
                                 margin={{
                                     top: 20,
                                     right: 20,
@@ -336,7 +347,7 @@ function CartridgeQuantitiesChart() {
                                     ]}
                                 >
 
-                                    {data.map(
+                                    {sortedData.map(
                                         (item) => (
                                             <Cell
                                                 key={`issued-${item.cartridge_id}`}

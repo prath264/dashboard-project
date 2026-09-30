@@ -21,15 +21,11 @@ import "./stockInventory.css";
 
 
 function getStockStatus(item) {
-    if (item.available <= 0) {
-        return "Out of Stock";
-    }
-
-    if (item.available <= item.reorder) {
-        return "Low Stock";
-    }
-
-    return "Normal";
+    // Status (Out of Stock / Low Stock / Normal) is computed by the
+    // backend using the 25%-of-total rule (see
+    // inventory_service.get_inventory). Use it directly instead of
+    // re-deriving it here from a per-cartridge reorder number.
+    return item.status;
 }
 
 
@@ -58,6 +54,7 @@ function StockInventory() {
     ] = useState(false);
 
     const [adjustTarget, setAdjustTarget] = useState(null);
+    const [cartridgeName, setCartridgeName] = useState("");
     const [newQuantity, setNewQuantity] = useState("");
     const [reason, setReason] = useState("");
     const [saving, setSaving] = useState(false);
@@ -126,6 +123,7 @@ function StockInventory() {
     const openAdjust = (item) => {
 
         setAdjustTarget(item);
+        setCartridgeName(item.cartridge);
         setNewQuantity(
             String(item.available)
         );
@@ -142,6 +140,7 @@ function StockInventory() {
         }
 
         setAdjustTarget(null);
+        setCartridgeName("");
         setNewQuantity("");
         setReason("");
         setAdjustError("");
@@ -181,9 +180,14 @@ function StockInventory() {
             return;
         }
 
+        const nameChanged =
+            cartridgeName.trim() !== adjustTarget.cartridge;
+        const quantityChanged =
+            parsedQuantity !== adjustTarget.available;
+
         if (
-            parsedQuantity ===
-            adjustTarget.available
+            !quantityChanged &&
+            !nameChanged
         ) {
 
             setAdjustError(
@@ -193,7 +197,7 @@ function StockInventory() {
             return;
         }
 
-        if (!reason.trim()) {
+        if (quantityChanged && !reason.trim()) {
 
             setAdjustError(
                 "Please provide a reason for this adjustment."
@@ -207,21 +211,37 @@ function StockInventory() {
             setSaving(true);
             setAdjustError("");
 
-            await apiRequest(
-                `/inventory/${adjustTarget.cartridge_id}/adjust`,
-                {
-                    method: "POST",
-                    body: {
-                        new_quantity:
-                            parsedQuantity,
-                        reason:
-                            reason.trim(),
+            if (nameChanged) {
+                await apiRequest(
+                    `/cartridges/${adjustTarget.cartridge_id}`,
+                    {
+                        method: "PATCH",
+                        body: {
+                            model: cartridgeName.trim(),
+                        },
                     },
-                },
-                accessToken
-            );
+                    accessToken
+                );
+            }
+
+            if (quantityChanged) {
+                await apiRequest(
+                    `/inventory/${adjustTarget.cartridge_id}/adjust`,
+                    {
+                        method: "POST",
+                        body: {
+                            new_quantity:
+                                parsedQuantity,
+                            reason:
+                                reason.trim(),
+                        },
+                    },
+                    accessToken
+                );
+            }
 
             setAdjustTarget(null);
+            setCartridgeName("");
             setNewQuantity("");
             setReason("");
             setAdjustError("");
@@ -595,10 +615,6 @@ function StockInventory() {
                                             </th>
 
                                             <th>
-                                                Color
-                                            </th>
-
-                                            <th>
                                                 Printer
                                             </th>
 
@@ -685,14 +701,6 @@ function StockInventory() {
 
                                                             <td>
                                                                 {item.cartridge}
-                                                            </td>
-
-                                                            <td>
-
-                                                                <span className="color-badge">
-                                                                    {item.color}
-                                                                </span>
-
                                                             </td>
 
                                                             <td className="printer-name">
@@ -1135,6 +1143,54 @@ function StockInventory() {
                                 </div>
 
                             )}
+
+
+                            <div
+                                style={{
+                                    marginBottom:
+                                        "14px"
+                                }}
+                            >
+
+                                <label
+                                    style={{
+                                        display:
+                                            "block",
+                                        marginBottom:
+                                            "6px",
+                                        fontSize:
+                                            "13px",
+                                        fontWeight:
+                                            600
+                                    }}
+                                >
+                                    Cartridge Name
+                                </label>
+
+                                <input
+                                    type="text"
+                                    value={cartridgeName}
+                                    onChange={(event) =>
+                                        setCartridgeName(
+                                            event.target.value
+                                        )
+                                    }
+                                    minLength="1"
+                                    maxLength="150"
+                                    required
+                                    style={{
+                                        width:
+                                            "100%",
+                                        padding:
+                                            "10px",
+                                        border:
+                                            "1px solid #d1d5db",
+                                        borderRadius:
+                                            "6px"
+                                    }}
+                                />
+
+                            </div>
 
 
                             <div

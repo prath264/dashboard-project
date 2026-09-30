@@ -22,6 +22,12 @@ def serialize_request(
         id=request.id,
 
         requester_id=request.requester_id,
+        employee_id=request.employee_id,
+        employee_name=(
+            request.employee.name
+            if request.employee
+            else None
+        ),
         requester_name=(
             request.requester.username
             if request.requester
@@ -83,6 +89,7 @@ async def list_cartridge_requests(
         select(CartridgeRequest)
         .options(
             selectinload(CartridgeRequest.requester),
+            selectinload(CartridgeRequest.employee),
             selectinload(CartridgeRequest.location),
             selectinload(CartridgeRequest.engineer),
             selectinload(CartridgeRequest.printer),
@@ -126,6 +133,7 @@ async def get_cartridge_request(
         select(CartridgeRequest)
         .options(
             selectinload(CartridgeRequest.requester),
+            selectinload(CartridgeRequest.employee),
             selectinload(CartridgeRequest.location),
             selectinload(CartridgeRequest.engineer),
             selectinload(CartridgeRequest.printer),
@@ -148,10 +156,12 @@ async def get_cartridge_request(
 async def create_cartridge_request(
     db: AsyncSession,
     data: CartridgeRequestCreate,
+    requester_id: int,
 ) -> CartridgeRequestResponse:
 
     request = CartridgeRequest(
-        requester_id=data.requester_id,
+        requester_id=requester_id,
+        employee_id=data.employee_id,
         location_id=data.location_id,
         engineer_id=data.engineer_id,
         printer_id=data.printer_id,
@@ -171,6 +181,7 @@ async def create_cartridge_request(
         select(CartridgeRequest)
         .options(
             selectinload(CartridgeRequest.requester),
+            selectinload(CartridgeRequest.employee),
             selectinload(CartridgeRequest.location),
             selectinload(CartridgeRequest.engineer),
             selectinload(CartridgeRequest.printer),
@@ -197,6 +208,7 @@ async def approve_cartridge_request(
         select(CartridgeRequest)
         .options(
             selectinload(CartridgeRequest.requester),
+            selectinload(CartridgeRequest.employee),
             selectinload(CartridgeRequest.location),
             selectinload(CartridgeRequest.engineer),
             selectinload(CartridgeRequest.printer),
@@ -206,6 +218,7 @@ async def approve_cartridge_request(
         .where(
             CartridgeRequest.id == request_id
         )
+        .with_for_update()
     )
 
     request = result.scalar_one_or_none()
@@ -223,6 +236,7 @@ async def approve_cartridge_request(
     request.approved_by = approved_by
 
     request.approved_at = datetime.now(timezone.utc)
+    request.rejection_reason = None
 
     await db.flush()
 
@@ -241,6 +255,7 @@ async def reject_cartridge_request(
         select(CartridgeRequest)
         .options(
             selectinload(CartridgeRequest.requester),
+            selectinload(CartridgeRequest.employee),
             selectinload(CartridgeRequest.location),
             selectinload(CartridgeRequest.engineer),
             selectinload(CartridgeRequest.printer),
@@ -250,6 +265,7 @@ async def reject_cartridge_request(
         .where(
             CartridgeRequest.id == request_id
         )
+        .with_for_update()
     )
 
     request = result.scalar_one_or_none()

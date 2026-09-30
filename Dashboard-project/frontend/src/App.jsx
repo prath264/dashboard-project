@@ -5,7 +5,7 @@ import {
     Routes,
 } from "react-router-dom";
 
-import Dashboard from "./pages/Dashboard";
+import Dashboard from "./pages/dashboard";
 import StockInventory from "./pages/StockInventory/stockInventory";
 import PendingApprovals from "./pages/PendingApprovals/PendingApprovals";
 import CartridgeRequests from "./pages/CartridgeRequests/CartridgeRequests";

@@ -7,7 +7,7 @@ from app.models.stock_movement import (
     StockMovement,
     StockMovementType,
 )
-from app.schemas.cartridge import CartridgeCreate
+from app.schemas.cartridge import CartridgeCreate, CartridgeUpdate
 
 
 async def list_cartridges(
@@ -110,6 +110,30 @@ async def create_or_receive_cartridge(
     )
 
     db.add(movement)
+
+    await db.flush()
+    await db.refresh(cartridge)
+
+    return cartridge
+
+
+async def update_cartridge(
+    db: AsyncSession,
+    cartridge_id: int,
+    data: CartridgeUpdate,
+) -> Cartridge:
+    result = await db.execute(
+        select(Cartridge).where(
+            Cartridge.id == cartridge_id
+        )
+    )
+    cartridge = result.scalar_one_or_none()
+
+    if cartridge is None:
+        raise ValueError("Cartridge not found.")
+
+    if data.model is not None:
+        cartridge.model = data.model
 
     await db.flush()
     await db.refresh(cartridge)

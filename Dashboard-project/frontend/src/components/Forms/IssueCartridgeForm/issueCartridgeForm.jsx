@@ -303,7 +303,7 @@ function IssueCartridgeForm({ closeForm }) {
                 {
                     method: "POST",
                     body: {
-                        requester_id: Number(selectedUserId),
+                        employee_id: Number(selectedUserId),
                         location_id: Number(location),
                         engineer_id: Number(engineer),
                         printer_id: Number(printerId),
@@ -554,9 +554,7 @@ function IssueCartridgeForm({ closeForm }) {
                             >
                                 {cartridge.model}
 
-                                {cartridge.color
-                                    ? ` - ${cartridge.color}`
-                                    : ""}
+
                             </option>
                         ))}
                     </select>

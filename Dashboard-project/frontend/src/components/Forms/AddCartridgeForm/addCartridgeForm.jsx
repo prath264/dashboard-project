@@ -24,9 +24,13 @@ function AddCartridgeForm({
     const [formData, setFormData] = useState({
         printer_id: "",
         model: "",
-        color: "",
+        // color is no longer editable in this form; every cartridge
+        // created here is submitted with a fixed placeholder value.
+        color: "N/A",
         quantity: 1,
-        reorder_level: 10,
+        // reorder_level is no longer set per cartridge: Low Stock is now
+        // based on the 25%-of-total rule computed by the backend, so the
+        // schema's own default (10) is used and never sent from here.
         remarks: "",
     });
 
@@ -135,11 +139,6 @@ function AddCartridgeForm({
                         quantity:
                             Number(
                                 formData.quantity
-                            ),
-
-                        reorder_level:
-                            Number(
-                                formData.reorder_level
                             ),
 
                         remarks:
@@ -256,42 +255,6 @@ function AddCartridgeForm({
                     />
 
 
-                    <label>
-                        Color
-                    </label>
-
-                    <select
-                        name="color"
-                        value={
-                            formData.color
-                        }
-                        onChange={handleChange}
-                        required
-                        disabled={saving}
-                    >
-
-                        <option value="">
-                            Select Color
-                        </option>
-
-                        <option value="Black">
-                            Black
-                        </option>
-
-                        <option value="Cyan">
-                            Cyan
-                        </option>
-
-                        <option value="Magenta">
-                            Magenta
-                        </option>
-
-                        <option value="Yellow">
-                            Yellow
-                        </option>
-
-                    </select>
-
 
                     <label>
                         Quantity
@@ -305,23 +268,6 @@ function AddCartridgeForm({
                         }
                         onChange={handleChange}
                         min="1"
-                        required
-                        disabled={saving}
-                    />
-
-
-                    <label>
-                        Reorder Level
-                    </label>
-
-                    <input
-                        type="number"
-                        name="reorder_level"
-                        value={
-                            formData.reorder_level
-                        }
-                        onChange={handleChange}
-                        min="0"
                         required
                         disabled={saving}
                     />

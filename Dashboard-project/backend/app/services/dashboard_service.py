@@ -4,9 +4,14 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
+from app.core.constants import LOW_STOCK_THRESHOLD_RATIO
 from app.models.cartridge import Cartridge
 from app.models.cartridge_issue import CartridgeIssue
 from app.models.inventory import Inventory
+from app.models.stock_movement import (
+    StockMovement,
+    StockMovementType,
+)
 
 
 async def get_dashboard_summary(
@@ -60,19 +65,53 @@ async def get_dashboard_summary(
 
     issued_this_month = issued_result.scalar() or 0
 
-    low_stock_result = await db.execute(
-        select(func.count(Inventory.id))
+    # Low Stock: Available <= LOW_STOCK_THRESHOLD_RATIO * (Available + Issued).
+    # Computed the same way as Stock Inventory's per-cartridge status
+    # (see inventory_service.get_inventory), so the two stay consistent.
+    issued_subquery = (
+        select(
+            StockMovement.cartridge_id,
+            func.coalesce(
+                func.sum(StockMovement.quantity),
+                0,
+            ).label("issued"),
+        )
+        .where(
+            StockMovement.movement_type == StockMovementType.ISSUE
+        )
+        .group_by(StockMovement.cartridge_id)
+        .subquery()
+    )
+
+    stock_levels_result = await db.execute(
+        select(
+            Inventory.quantity,
+            func.coalesce(
+                issued_subquery.c.issued,
+                0,
+            ).label("issued"),
+        )
         .join(
             Cartridge,
             Cartridge.id == Inventory.cartridge_id,
         )
-        .where(
-            Cartridge.is_active.is_(True),
-            Inventory.quantity <= Cartridge.reorder_level,
+        .outerjoin(
+            issued_subquery,
+            issued_subquery.c.cartridge_id
+            == Cartridge.id,
         )
+        .where(Cartridge.is_active.is_(True))
     )
 
-    low_stock = low_stock_result.scalar() or 0
+    low_stock = 0
+    for available, issued in stock_levels_result.all():
+        available = int(available or 0)
+        issued = int(issued or 0)
+        total = available + issued
+        if available <= 0:
+            continue
+        if total > 0 and available <= total * LOW_STOCK_THRESHOLD_RATIO:
+            low_stock += 1
 
     return {
         "cartridge_models": total_cartridges,

@@ -9,10 +9,8 @@ from app.models.cartridge_request import (
     CartridgeRequest,
     CartridgeRequestStatus,
 )
-from app.models.employee import Employee
 from app.models.inventory import Inventory
 from app.models.stock_movement import StockMovementType
-from app.models.user import User
 from app.schemas.cartridge_issue import CartridgeIssueCreate
 from app.services.stock_movement import create_stock_movement
 
@@ -83,26 +81,11 @@ async def create_cartridge_issue(
             f"Insufficient stock. Available quantity: {inventory.quantity}."
         )
 
-    # Look up the employee by matching the requester's employee_id string
-    requester_result = await session.execute(
-        select(User).where(User.id == request.requester_id)
-    )
-    requester = requester_result.scalar_one_or_none()
-    if requester is None:
-        raise ValueError("Requester user not found.")
-
-    employee_result = await session.execute(
-        select(Employee).where(Employee.employee_id == requester.employee_id)
-    )
-    employee = employee_result.scalar_one_or_none()
-    if employee is None:
-        raise ValueError(f"No employee found with employee_id: {requester.employee_id}")
-
     inventory.quantity -= request.quantity
 
     cartridge_issue = CartridgeIssue(
         request_id=request.id,
-        employee_id=employee.id,
+        employee_id=request.employee_id,
         location_id=request.location_id,
         engineer_id=request.engineer_id,
         printer_id=request.printer_id,

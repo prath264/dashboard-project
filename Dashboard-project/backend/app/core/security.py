@@ -85,9 +85,6 @@ def create_refresh_token(
 def decode_token(token: str) -> dict[str, Any]:
     settings = get_settings()
 
-    print("JWT ALGORITHM:", settings.jwt_algorithm)
-    print("JWT SECRET LENGTH:", len(settings.jwt_secret_key))
-
     return jwt.decode(
         token,
         settings.jwt_secret_key,

@@ -4,7 +4,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 
 class CartridgeRequestCreate(BaseModel):
-    requester_id: int
+    employee_id: int
     location_id: int
     engineer_id: int
     printer_id: int
@@ -29,6 +29,8 @@ class CartridgeRequestResponse(BaseModel):
     id: int
 
     requester_id: int
+    employee_id: int
+    employee_name: str | None = None
     requester_name: str | None = None
 
     location_id: int
