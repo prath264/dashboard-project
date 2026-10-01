@@ -1,24 +1,16 @@
 import { useCallback, useEffect, useState } from "react";
-import { FiSearch, FiDownload } from "react-icons/fi";
+import { FiSearch, FiX, FiFilter } from "react-icons/fi";
 
 import Sidebar from "../../components/Sidebar/sidebar";
 import Navbar from "../../components/Navbar/navbar";
 
 import { useAuth } from "../../context/AuthContext";
 import { apiRequest } from "../../api/apiClient";
+import { downloadFile } from "../../api/downloadFile";
+import ExportMenu from "../../components/ExportMenu";
 
 import "./stockMovements.css";
 
-
-const columns = [
-    { key: "id", label: "ID" },
-    { key: "created_at", label: "Date" },
-    { key: "cartridge_model", label: "Cartridge" },
-    { key: "movement_type", label: "Movement", status: true },
-    { key: "quantity", label: "Quantity" },
-    { key: "performed_by_name", label: "Performed By" },
-    { key: "remarks", label: "Remarks" },
-];
 
 function formatDate(value) {
     if (!value) return "";
@@ -31,9 +23,26 @@ function formatDate(value) {
     });
 }
 
+function formatDateTime(value) {
+    if (!value) return "";
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return "";
+    return date.toLocaleString("en-GB", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+    });
+}
+
 function formatQuantity(movementType, quantity) {
     const type = String(movementType || "").toUpperCase();
     if (type === "ISSUE") return `-${quantity}`;
+    if (type === "RECEIPT") return `+${quantity}`;
+    if (type === "ADJUSTMENT") {
+        return quantity >= 0 ? `+${quantity}` : String(quantity);
+    }
     return `+${quantity}`;
 }
 
@@ -41,52 +50,6 @@ function getErrorMessage(error) {
     if (!error) return "Something went wrong.";
     if (typeof error.message === "string") return error.message;
     return "Something went wrong.";
-}
-
-function downloadCsv(movements) {
-    const headers = [
-        "ID",
-        "Date",
-        "Cartridge",
-        "Movement",
-        "Quantity",
-        "Performed By",
-        "Remarks",
-    ];
-
-    const rows = movements.map((movement) => [
-        movement.id,
-        formatDate(movement.created_at),
-        movement.cartridge_model,
-        movement.movement_type,
-        formatQuantity(movement.movement_type, movement.quantity),
-        movement.performed_by_name,
-        movement.remarks || "",
-    ]);
-
-    const escapeCell = (value) => {
-        const str = String(value ?? "");
-        if (str.includes(",") || str.includes('"') || str.includes("\n")) {
-            return `"${str.replace(/"/g, '""')}"`;
-        }
-        return str;
-    };
-
-    const csvContent = [headers, ...rows]
-        .map((row) => row.map(escapeCell).join(","))
-        .join("\n");
-
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `stock-movements-${new Date()
-        .toISOString()
-        .split("T")[0]}.csv`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
 }
 
 function StockMovements() {
@@ -99,16 +62,24 @@ function StockMovements() {
 
     const [search, setSearch] = useState("");
     const [movementType, setMovementType] = useState("");
+    const [cartridgeId, setCartridgeId] = useState("");
     const [startDate, setStartDate] = useState("");
     const [endDate, setEndDate] = useState("");
 
     const [summary, setSummary] = useState({
+        issued: 0,
+        received: 0,
+        adjusted: 0,
+        net_movement: 0,
         issued_this_week: 0,
         received_this_month: 0,
     });
 
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+    const [exportLoading, setExportLoading] = useState(false);
+
+    const [cartridges, setCartridges] = useState([]);
 
     const loadSummary = useCallback(async () => {
         if (!accessToken) return;
@@ -122,12 +93,31 @@ function StockMovements() {
 
             setSummary(
                 response.data || {
+                    issued: 0,
+                    received: 0,
+                    adjusted: 0,
+                    net_movement: 0,
                     issued_this_week: 0,
                     received_this_month: 0,
                 }
             );
         } catch (error) {
             console.error("Failed to load stock movement summary:", error);
+        }
+    }, [accessToken]);
+
+    const loadCartridges = useCallback(async () => {
+        if (!accessToken) return;
+
+        try {
+            const response = await apiRequest(
+                "/cartridges?is_active=true",
+                { method: "GET" },
+                accessToken
+            );
+            setCartridges(response.data || []);
+        } catch (error) {
+            console.error("Failed to load cartridges:", error);
         }
     }, [accessToken]);
 
@@ -149,12 +139,20 @@ function StockMovements() {
                 params.set("movement_type", movementType);
             }
 
+            if (cartridgeId) {
+                params.set("cartridge_id", String(cartridgeId));
+            }
+
             if (startDate) {
                 params.set("start_date", startDate);
             }
 
             if (endDate) {
                 params.set("end_date", endDate);
+            }
+
+            if (search) {
+                params.set("search", search);
             }
 
             const response = await apiRequest(
@@ -171,36 +169,65 @@ function StockMovements() {
         } finally {
             setLoading(false);
         }
-    }, [accessToken, page, pageSize, movementType, startDate, endDate]);
+    }, [accessToken, page, pageSize, movementType, cartridgeId, startDate, endDate, search]);
 
-    useEffect(() => {
-        loadSummary();
-    }, [loadSummary]);
+    const handleExport = useCallback(async (exportFormat) => {
+        if (!accessToken) return;
 
-    useEffect(() => {
-        loadMovements();
-    }, [loadMovements]);
+        try {
+            setExportLoading(true);
 
-    const searchedMovements = (() => {
-        const searchValue = search.toLowerCase().trim();
+            const params = new URLSearchParams();
+            params.set("format", exportFormat);
+            if (movementType) params.set("movement_type", movementType);
+            if (cartridgeId) params.set("cartridge_id", String(cartridgeId));
+            if (startDate) params.set("start_date", startDate);
+            if (endDate) params.set("end_date", endDate);
+            if (search) params.set("search", search);
 
-        if (!searchValue) {
-            return movements;
+            await downloadFile(
+                `/stock-movements/export?${params.toString()}`,
+                accessToken
+            );
+        } catch (error) {
+            console.error("Failed to export stock movements:", error);
+            setError(getErrorMessage(error));
+        } finally {
+            setExportLoading(false);
         }
-
-        return movements.filter((movement) =>
-            Object.values(movement).some((value) =>
-                String(value ?? "").toLowerCase().includes(searchValue)
-            )
-        );
-    })();
-
-    const totalPages = Math.max(1, Math.ceil(total / pageSize));
+    }, [accessToken, movementType, cartridgeId, startDate, endDate, search]);
 
     const handleFilterChange = (setter) => (event) => {
         setter(event.target.value);
         setPage(1);
     };
+
+    const handleSearchChange = (event) => {
+        setSearch(event.target.value);
+        setPage(1);
+    };
+
+    const clearFilters = () => {
+        setSearch("");
+        setMovementType("");
+        setCartridgeId("");
+        setStartDate("");
+        setEndDate("");
+        setPage(1);
+    };
+
+    const hasActiveFilters = search || movementType || cartridgeId || startDate || endDate;
+
+    useEffect(() => {
+        loadSummary();
+        loadCartridges();
+    }, [loadSummary, loadCartridges]);
+
+    useEffect(() => {
+        loadMovements();
+    }, [loadMovements]);
+
+    const totalPages = Math.max(1, Math.ceil(total / pageSize));
 
     return (
         <div className="dashboard-container">
@@ -215,15 +242,11 @@ function StockMovements() {
                             <h1>Stock Movements</h1>
                         </div>
 
-                        <button
-                            type="button"
+                        <ExportMenu
                             className="movements-export-btn"
-                            onClick={() => downloadCsv(searchedMovements)}
-                            disabled={searchedMovements.length === 0}
-                        >
-                            <FiDownload />
-                            Export CSV
-                        </button>
+                            onExport={handleExport}
+                            disabled={total === 0 || exportLoading}
+                        />
                     </header>
 
                     {error && <div className="form-error">{error}</div>}
@@ -231,19 +254,37 @@ function StockMovements() {
                     <div className="movements-summary">
                         <div className="movements-summary-card">
                             <span className="movements-summary-label">
-                                Issued This Week
+                                Total Issued
                             </span>
-                            <span className="movements-summary-value">
-                                {summary.issued_this_week}
+                            <span className="movements-summary-value issued">
+                                {summary.issued.toLocaleString()}
                             </span>
                         </div>
 
                         <div className="movements-summary-card">
                             <span className="movements-summary-label">
-                                Received This Month
+                                Total Received
                             </span>
-                            <span className="movements-summary-value">
-                                {summary.received_this_month}
+                            <span className="movements-summary-value received">
+                                {summary.received.toLocaleString()}
+                            </span>
+                        </div>
+
+                        <div className="movements-summary-card">
+                            <span className="movements-summary-label">
+                                Total Adjusted
+                            </span>
+                            <span className="movements-summary-value adjusted">
+                                {summary.adjusted.toLocaleString()}
+                            </span>
+                        </div>
+
+                        <div className="movements-summary-card">
+                            <span className="movements-summary-label">
+                                Net Movement
+                            </span>
+                            <span className={`movements-summary-value ${summary.net_movement >= 0 ? "positive" : "negative"}`}>
+                                {summary.net_movement >= 0 ? "+" : ""}{summary.net_movement.toLocaleString()}
                             </span>
                         </div>
                     </div>
@@ -254,8 +295,8 @@ function StockMovements() {
                             <input
                                 type="text"
                                 value={search}
-                                onChange={(event) => setSearch(event.target.value)}
-                                placeholder="Search stock movements..."
+                                onChange={handleSearchChange}
+                                placeholder="Search: cartridge, printer, employee, location, reference..."
                             />
                         </div>
 
@@ -270,22 +311,46 @@ function StockMovements() {
                             <option value="RETURN">Return</option>
                         </select>
 
+                        <select
+                            value={cartridgeId}
+                            onChange={handleFilterChange(setCartridgeId)}
+                        >
+                            <option value="">All Cartridges</option>
+                            {cartridges.map((cartridge) => (
+                                <option key={cartridge.id} value={cartridge.id}>
+                                    {cartridge.model} ({cartridge.color})
+                                </option>
+                            ))}
+                        </select>
+
                         <input
                             type="date"
                             value={startDate}
                             onChange={handleFilterChange(setStartDate)}
+                            placeholder="From"
                         />
 
                         <input
                             type="date"
                             value={endDate}
                             onChange={handleFilterChange(setEndDate)}
+                            placeholder="To"
                         />
+
+                        {hasActiveFilters && (
+                            <button
+                                type="button"
+                                className="movements-clear-btn"
+                                onClick={clearFilters}
+                            >
+                                <FiX /> Clear Filters
+                            </button>
+                        )}
                     </div>
 
                     <div className="movements-title">
                         <span>
-                            {total} movement{total !== 1 ? "s" : ""}
+                            {total} movement{total !== 1 ? "s" : ""} found
                         </span>
                     </div>
 
@@ -294,97 +359,58 @@ function StockMovements() {
                             <table className="movements-table">
                                 <thead>
                                     <tr>
-                                        {columns.map((column) => (
-                                            <th
-                                                key={column.key}
-                                                className={
-                                                    column.key === "id" ||
-                                                    column.key === "created_at" ||
-                                                    column.key === "movement_type" ||
-                                                    column.key === "quantity"
-                                                        ? "center-column"
-                                                        : ""
-                                                }
-                                            >
-                                                {column.label}
-                                            </th>
-                                        ))}
+                                        <th className="center-column">ID</th>
+                                        <th>Date/Time</th>
+                                        <th>Movement</th>
+                                        <th>Cartridge</th>
+                                        <th>Printer</th>
+                                        <th>Employee</th>
+                                        <th>Location</th>
+                                        <th className="center-column">Quantity</th>
+                                        <th>Performed By</th>
+                                        <th>Reference</th>
+                                        <th>Remarks</th>
                                     </tr>
                                 </thead>
 
                                 <tbody>
                                     {loading ? (
                                         <tr>
-                                            <td colSpan={columns.length} className="no-results">
+                                            <td colSpan={11} className="no-results">
                                                 Loading...
                                             </td>
                                         </tr>
-                                    ) : searchedMovements.length > 0 ? (
-                                        searchedMovements.map((movement) => (
+                                    ) : movements.length > 0 ? (
+                                        movements.map((movement) => (
                                             <tr key={movement.id}>
-                                                {columns.map((column) => {
-                                                    const isCentered =
-                                                        column.key === "id" ||
-                                                        column.key === "created_at" ||
-                                                        column.key === "movement_type" ||
-                                                        column.key === "quantity";
-
-                                                    if (column.key === "movement_type") {
-                                                        const type = String(
-                                                            movement.movement_type || ""
-                                                        ).toLowerCase();
-
-                                                        return (
-                                                            <td
-                                                                key={column.key}
-                                                                className={isCentered ? "center-column" : ""}
-                                                            >
-                                                                <span className={`movements-status ${type}`}>
-                                                                    {movement.movement_type}
-                                                                </span>
-                                                            </td>
-                                                        );
-                                                    }
-
-                                                    if (column.key === "created_at") {
-                                                        return (
-                                                            <td
-                                                                key={column.key}
-                                                                className={isCentered ? "center-column" : ""}
-                                                            >
-                                                                {formatDate(movement.created_at)}
-                                                            </td>
-                                                        );
-                                                    }
-
-                                                    if (column.key === "quantity") {
-                                                        return (
-                                                            <td
-                                                                key={column.key}
-                                                                className={isCentered ? "center-column" : ""}
-                                                            >
-                                                                {formatQuantity(
-                                                                    movement.movement_type,
-                                                                    movement.quantity
-                                                                )}
-                                                            </td>
-                                                        );
-                                                    }
-
-                                                    return (
-                                                        <td
-                                                            key={column.key}
-                                                            className={isCentered ? "center-column" : ""}
-                                                        >
-                                                            {movement[column.key] ?? "-"}
-                                                        </td>
-                                                    );
-                                                })}
+                                                <td className="center-column">{movement.id}</td>
+                                                <td>{formatDateTime(movement.created_at)}</td>
+                                                <td className="center-column">
+                                                    <span className={`movements-status ${movement.movement_type.toLowerCase()}`}>
+                                                        {movement.movement_type}
+                                                    </span>
+                                                </td>
+                                                <td>{movement.cartridge_model} ({movement.cartridge_color})</td>
+                                                <td>{movement.printer_model}</td>
+                                                <td>
+                                                    {movement.employee_name
+                                                        ? `${movement.employee_name} (${movement.employee_id})`
+                                                        : "-"}
+                                                </td>
+                                                <td>{movement.location_name || "-"}</td>
+                                                <td className="center-column">
+                                                    {formatQuantity(movement.movement_type, movement.quantity)}
+                                                </td>
+                                                <td>{movement.performed_by_name}</td>
+                                                <td className="center-column">
+                                                    {movement.reference_id ? `#${movement.reference_id}` : "-"}
+                                                </td>
+                                                <td>{movement.remarks || "-"}</td>
                                             </tr>
                                         ))
                                     ) : (
                                         <tr>
-                                            <td colSpan={columns.length} className="no-results">
+                                            <td colSpan={11} className="no-results">
                                                 No stock movements found.
                                             </td>
                                         </tr>
@@ -397,7 +423,7 @@ function StockMovements() {
                             <button
                                 type="button"
                                 onClick={() => setPage((current) => Math.max(1, current - 1))}
-                                disabled={page <= 1}
+                                disabled={page <= 1 || loading}
                             >
                                 Previous
                             </button>
@@ -411,7 +437,7 @@ function StockMovements() {
                                 onClick={() =>
                                     setPage((current) => Math.min(totalPages, current + 1))
                                 }
-                                disabled={page >= totalPages}
+                                disabled={page >= totalPages || loading}
                             >
                                 Next
                             </button>

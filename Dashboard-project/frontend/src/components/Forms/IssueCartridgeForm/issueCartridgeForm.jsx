@@ -1,4 +1,4 @@
-import "./IssueCartridgeForm.css";
+import "./issueCartridgeForm.css";
 import { useEffect, useState, useRef, useCallback } from "react";
 
 import { apiRequest } from "../../../api/apiClient";

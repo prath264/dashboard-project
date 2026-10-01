@@ -4,7 +4,7 @@ import { FiChevronDown } from "react-icons/fi";
 
 import { useAuth } from "../../context/AuthContext";
 
-import "./Sidebar.css";
+import "./sidebar.css";
 
 function Sidebar() {
     const navigate = useNavigate();
@@ -46,7 +46,7 @@ function Sidebar() {
     return (
         <aside className="sidebar">
 
-            <h2>MMRCL</h2>
+            <h2>SANCHAY</h2>
 
             <ul>
 
@@ -156,84 +156,82 @@ function Sidebar() {
                     <ul className="master-dropdown">
 
                         <li
-                            className={
-                                isActive("/locations")
-                                    ? "active"
-                                    : ""
-                            }
-                            onClick={() =>
-                                handleMasterPageClick(
-                                    "/locations"
-                                )
-                            }
-                        >
-                            Locations/Users
-                        </li>
+    className={
+        isActive("/printer-assignments")
+            ? "active"
+            : ""
+    }
+    onClick={() =>
+        handleMasterPageClick(
+            "/printer-assignments"
+        )
+    }
+>
+    Printer Assignment
+</li>
 
-                        <li
-                            className={
-                                isActive("/printer-assignments")
-                                    ? "active"
-                                    : ""
-                            }
-                            onClick={() =>
-                                handleMasterPageClick(
-                                    "/printer-assignments"
-                                )
-                            }
-                        >
-                            Printer Assignment
-                        </li>
+<li
+    className={
+        isActive("/employees")
+            ? "active"
+            : ""
+    }
+    onClick={() =>
+        handleMasterPageClick(
+            "/employees"
+        )
+    }
+>
+    Employees
+</li>
 
-                        <li
-                            className={
-                                isActive("/engineers")
-                                    ? "active"
-                                    : ""
-                            }
-                            onClick={() =>
-                                handleMasterPageClick(
-                                    "/engineers"
-                                )
-                            }
-                        >
-                            Engineers
-                        </li>
+<li
+    className={
+        isActive("/locations")
+            ? "active"
+            : ""
+    }
+    onClick={() =>
+        handleMasterPageClick(
+            "/locations"
+        )
+    }
+>
+    Locations/Users
+</li>
 
-                        {/* Only Master Admin */}
+<li
+    className={
+        isActive("/engineers")
+            ? "active"
+            : ""
+    }
+    onClick={() =>
+        handleMasterPageClick(
+            "/engineers"
+        )
+    }
+>
+    Engineers
+</li>
 
-                        {isMasterAdmin && (
-                            <li
-                                className={
-                                    isActive("/users")
-                                        ? "active"
-                                        : ""
-                                }
-                                onClick={() =>
-                                    handleMasterPageClick(
-                                        "/users"
-                                    )
-                                }
-                            >
-                                Accounts
-                            </li>
-                        )}
-
-                        <li
-                            className={
-                                isActive("/employees")
-                                    ? "active"
-                                    : ""
-                            }
-                            onClick={() =>
-                                handleMasterPageClick(
-                                    "/employees"
-                                )
-                            }
-                        >
-                            Employees
-                        </li>
-
+{/* Only Master Admin */}
+{isMasterAdmin && (
+    <li
+        className={
+            isActive("/users")
+                ? "active"
+                : ""
+        }
+        onClick={() =>
+            handleMasterPageClick(
+                "/users"
+            )
+        }
+    >
+        Accounts
+    </li>
+)}
                     </ul>
                 )}
 

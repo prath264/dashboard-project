@@ -6,7 +6,7 @@ import {
 } from "react-router-dom";
 
 import Dashboard from "./pages/dashboard";
-import StockInventory from "./pages/StockInventory/stockInventory";
+import StockInventory from "./pages/StockInventory/StockInventory";
 import PendingApprovals from "./pages/PendingApprovals/PendingApprovals";
 import CartridgeRequests from "./pages/CartridgeRequests/CartridgeRequests";
 import InstallationHistory from "./pages/InstallationHistory/InstallationHistory";

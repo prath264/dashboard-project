@@ -19,7 +19,7 @@ import RecentActivity from "../components/RecentActivity/recentActivity";
 import { apiRequest } from "../api/apiClient";
 import { useAuth } from "../context/AuthContext";
 
-import "./Dashboard.css";
+import "./dashboard.css";
 
 
 function Dashboard() {

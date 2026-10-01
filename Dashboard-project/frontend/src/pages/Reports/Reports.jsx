@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
 import {
-    FiDownload,
     FiCalendar,
     FiTrendingUp,
     FiPackage,
@@ -19,12 +18,13 @@ import {
     XAxis,
     YAxis,
 } from "recharts";
-import * as XLSX from "xlsx";
 
 import Sidebar from "../../components/Sidebar/sidebar";
 import Navbar from "../../components/Navbar/navbar";
 import { useAuth } from "../../context/AuthContext";
 import { apiRequest } from "../../api/apiClient";
+import { downloadFile } from "../../api/downloadFile";
+import ExportMenu from "../../components/ExportMenu";
 
 import "./reports.css";
 
@@ -76,28 +76,6 @@ function IssueTooltip({ active, payload, label }) {
     );
 }
 
-function downloadExcel(data, filename, headers) {
-    const worksheetData = [headers, ...data.map((row) => headers.map((h) => row[h.key]))];
-    const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
-
-    const headerStyle = {
-        font: { bold: true, color: { rgb: "FFFFFF" } },
-        fill: { fgColor: { rgb: "2563EB" } },
-        alignment: { horizontal: "center" },
-    };
-
-    const headerRow = 1;
-    for (let i = 0; i < headers.length; i++) {
-        const cellAddress = XLSX.utils.encode_cell({ r: headerRow - 1, c: i });
-        if (!worksheet[cellAddress]) worksheet[cellAddress] = { v: headers[i].label };
-        worksheet[cellAddress].s = headerStyle;
-    }
-
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
-    XLSX.writeFile(workbook, filename);
-}
-
 const SUMMARY_CARDS = [
     {
         key: "issued",
@@ -114,6 +92,13 @@ const SUMMARY_CARDS = [
         bgColor: "#d1fae5",
     },
     {
+        key: "adjusted",
+        label: "Total Adjusted",
+        icon: FiMinus,
+        color: "#8b5cf6",
+        bgColor: "#ede9fe",
+    },
+    {
         key: "net",
         label: "Net Movement",
         icon: FiMinus,
@@ -127,16 +112,6 @@ const SUMMARY_CARDS = [
         color: "#ef4444",
         bgColor: "#fee2e2",
     },
-];
-
-const TOP_CARTRIDGES_HEADERS = [
-    { key: "cartridge_model", label: "Cartridge Model" },
-    { key: "total_issued", label: "Total Issued" },
-];
-
-const LOCATION_HEADERS = [
-    { key: "location_name", label: "Location" },
-    { key: "total_issued", label: "Total Issued" },
 ];
 
 function Reports() {
@@ -201,36 +176,15 @@ function Reports() {
         setter(event.target.value);
     };
 
-    const handleExportTopCartridges = () => {
-        const exportData = data.top_cartridges.map((item, index) => ({
-            ...item,
-            rank: index + 1,
-        }));
-        downloadExcel(
-            exportData,
-            `top-cartridges-${new Date().toISOString().split("T")[0]}.xlsx`,
-            [
-                { key: "rank", label: "Rank" },
-                { key: "cartridge_model", label: "Cartridge Model" },
-                { key: "total_issued", label: "Total Issued" },
-            ]
-        );
-    };
-
-    const handleExportLocations = () => {
-        const exportData = data.location_consumption.map((item, index) => ({
-            ...item,
-            rank: index + 1,
-        }));
-        downloadExcel(
-            exportData,
-            `consumption-by-location-${new Date().toISOString().split("T")[0]}.xlsx`,
-            [
-                { key: "rank", label: "Rank" },
-                { key: "location_name", label: "Location" },
-                { key: "total_issued", label: "Total Issued" },
-            ]
-        );
+    const handleExport = async (exportFormat) => {
+        try {
+            const params = new URLSearchParams({ format: exportFormat });
+            if (startDate) params.set("start_date", startDate);
+            if (endDate) params.set("end_date", endDate);
+            await downloadFile(`/reports/export?${params.toString()}`, accessToken);
+        } catch (exportError) {
+            setError(exportError.message || "Failed to export reports.");
+        }
     };
 
     const totalIssued = data.monthly_trend.reduce((sum, item) => sum + (item.issued || 0), 0);
@@ -249,6 +203,11 @@ function Reports() {
                             <h1>Reports</h1>
                             <p>Consumption analytics and inventory movement overview</p>
                         </div>
+                        <ExportMenu
+                            className="table-export-btn"
+                            onExport={handleExport}
+                            disabled={loading || !accessToken}
+                        />
                     </header>
 
                     {error && <div className="form-error">{error}</div>}
@@ -405,14 +364,6 @@ function Reports() {
                                     </h3>
                                     <p>Most issued cartridge models in selected period</p>
                                 </div>
-                                <button
-                                    type="button"
-                                    className="table-export-btn"
-                                    onClick={handleExportTopCartridges}
-                                    disabled={data.top_cartridges.length === 0 || loading}
-                                >
-                                    <FiDownload /> Export Excel
-                                </button>
                             </div>
 
                             <div className="reports-table-wrap">
@@ -455,14 +406,6 @@ function Reports() {
                                     </h3>
                                     <p>Cartridge issues grouped by location</p>
                                 </div>
-                                <button
-                                    type="button"
-                                    className="table-export-btn"
-                                    onClick={handleExportLocations}
-                                    disabled={data.location_consumption.length === 0 || loading}
-                                >
-                                    <FiDownload /> Export Excel
-                                </button>
                             </div>
 
                             <div className="reports-table-wrap">
